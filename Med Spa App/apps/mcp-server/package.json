@@ -1,0 +1,37 @@
+{
+  "name": "mcp-server",
+  "version": "0.1.0",
+  "description": "MCP server for Baseplate OS — AI agent integration (11 tools)",
+  "license": "MIT",
+  "author": "Baseplate OS Contributors",
+  "keywords": [
+    "baseplate",
+    "mcp",
+    "ai",
+    "claude",
+    "cursor",
+    "saas"
+  ],
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "tsx src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "test": "jest --passWithNoTests",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint src/ --ext .ts,.tsx"
+  },
+  "dependencies": {
+    "@baseplate/core": "workspace:*",
+    "@baseplate/intelligence": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/jest": "^29.5.0",
+    "@types/node": "^20.0.0",
+    "jest": "^29.7.0",
+    "ts-jest": "^29.1.0",
+    "tsx": "^4.7.0",
+    "typescript": "^5.4.0"
+  }
+}

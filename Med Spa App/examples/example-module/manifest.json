@@ -1,0 +1,30 @@
+{
+  "name": "Example Module",
+  "description": "A reference marketplace module that demonstrates the manifest format and module structure",
+  "version": "1.0.0",
+  "author": "baseplate@example.com",
+  "vertical": "med-spa",
+  "category": "reporting",
+  "pricing": {
+    "model": "subscription",
+    "priceCents": 2900,
+    "interval": "month"
+  },
+  "entryPoint": "src/index.ts",
+  "dependencies": {
+    "@baseplate/core": "^0.1.0"
+  },
+  "permissions": [
+    "read:appointments",
+    "read:payments"
+  ],
+  "api_endpoints": [
+    "/api/example-module/summary"
+  ],
+  "ui_pages": [
+    {
+      "path": "/example-module",
+      "label": "Example Dashboard"
+    }
+  ]
+}

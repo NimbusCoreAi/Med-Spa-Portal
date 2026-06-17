@@ -1,0 +1,68 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 8
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Cache turbo build
+        uses: actions/cache@v4
+        with:
+          path: |
+            .turbo
+            **/.turbo
+            **/.next/cache
+          key: turbo-${{ runner.os }}-${{ github.sha }}
+          restore-keys: |
+            turbo-${{ runner.os }}-
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Typecheck (all packages)
+        run: pnpm typecheck
+
+      - name: Test (all packages)
+        run: pnpm test
+
+      - name: Build portal-medspa
+        working-directory: apps/portal-medspa
+        run: npx next build
+
+      - name: Build connect-api
+        working-directory: apps/connect-api
+        run: npx next build
+
+      - name: Build portal-homeservices
+        working-directory: apps/portal-homeservices
+        run: npx next build
+
+      - name: Build test-home-services
+        working-directory: apps/test-home-services
+        run: npx next build
+
+      - name: Validate Python ML pipeline
+        run: |
+          pip install -r ml-models/requirements.txt
+          python -m py_compile ml-models/src/features.py ml-models/src/train.py ml-models/src/serve.py ml-models/src/evaluate.py

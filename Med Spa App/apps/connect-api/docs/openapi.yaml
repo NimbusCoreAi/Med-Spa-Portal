@@ -1,0 +1,394 @@
+openapi: 3.0.3
+info:
+  title: Baseplate Connect API
+  version: 0.1.0
+  description: Unified API for B2B integrations (SMS, billing, reporting).
+
+servers:
+  - url: https://connect-api-xxx.vercel.app
+    description: Production
+  - url: http://localhost:3001
+    description: Local dev
+
+components:
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-Key
+
+  schemas:
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+        detail:
+          type: string
+
+  responses:
+    BadRequest:
+      description: Invalid request body
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    Unauthorized:
+      description: Invalid or missing API key
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    RateLimited:
+      description: Rate limit exceeded
+      headers:
+        X-RateLimit-Limit:
+          description: Maximum requests per minute
+          schema:
+            type: integer
+        X-RateLimit-Remaining:
+          description: Remaining requests in the current window
+          schema:
+            type: integer
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    InternalError:
+      description: Server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+security:
+  - ApiKeyAuth: []
+
+paths:
+  /api/health:
+    get:
+      summary: Health check
+      security: []
+      responses:
+        '200':
+          description: Service healthy
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status: { type: string }
+                  service: { type: string }
+                  version: { type: string }
+                  timestamp: { type: string, format: date-time }
+
+  /api/v1/communications/sms-reminder:
+    post:
+      summary: Send SMS reminder
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [patient_phone, patient_name, appointment_time, clinic_name]
+              properties:
+                appointment_id: { type: string, format: uuid }
+                patient_phone: { type: string }
+                patient_name: { type: string }
+                appointment_time: { type: string, format: date-time }
+                clinic_name: { type: string }
+                template:
+                  type: string
+                  enum: [pre-appointment, intake-reminder]
+                  default: pre-appointment
+                intake_url: { type: string, format: uri }
+      responses:
+        '200':
+          description: SMS sent
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message_id: { type: string }
+                  status: { type: string }
+                  sent_at: { type: string, format: date-time }
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /api/v1/billing/package-deduct:
+    post:
+      summary: Deduct a session from a credit package
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [package_id, patient_id, clinic_id]
+              properties:
+                package_id: { type: string, format: uuid }
+                patient_id: { type: string, format: uuid }
+                clinic_id: { type: string, format: uuid }
+                appointment_id: { type: string, format: uuid }
+                performed_by: { type: string, format: uuid }
+      responses:
+        '200':
+          description: Session deducted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  package_id: { type: string, format: uuid }
+                  remaining_sessions: { type: integer }
+                  deducted_at: { type: string, format: date-time }
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          description: Package not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: No sessions remaining
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /api/v1/reporting/treatment-metrics:
+    post:
+      summary: Get treatment metrics
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [clinic_id]
+              properties:
+                clinic_id: { type: string, format: uuid }
+                from: { type: string, format: date-time }
+                to: { type: string, format: date-time }
+                group_by:
+                  type: string
+                  enum: [provider, service_type, month]
+                  default: service_type
+      responses:
+        '200':
+          description: Metrics retrieved
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  clinic_id: { type: string, format: uuid }
+                  period:
+                    type: object
+                    properties:
+                      from: { type: string, format: date-time, nullable: true }
+                      to: { type: string, format: date-time, nullable: true }
+                  group_by: { type: string }
+                  metrics:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        group_key: { type: string }
+                        total_appointments: { type: integer }
+                        completed: { type: integer }
+                        cancelled: { type: integer }
+                        no_show_rate: { type: number }
+                        revenue: { type: number }
+                        revenue_collected: { type: number }
+                        outstanding: { type: number }
+                  totals:
+                    type: object
+                    properties:
+                      total_appointments: { type: integer }
+                      total_revenue: { type: number }
+                      total_collected: { type: number }
+                      total_outstanding: { type: number }
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /api/v1/intelligence/risk-score:
+    post:
+      summary: Get risk score for a customer or tenant
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [tenant_id]
+              properties:
+                tenant_id: { type: string, format: uuid }
+                customer_id: { type: string, format: uuid }
+      responses:
+        '200':
+          description: Risk score computed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  tenant_id: { type: string, format: uuid }
+                  customer_id: { type: string, format: uuid, nullable: true }
+                  overall_risk:
+                    type: string
+                    enum: [low, medium, high]
+                  flags:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        type: { type: string }
+                        severity:
+                          type: string
+                          enum: [low, medium, high]
+                        reason: { type: string }
+                        action: { type: string }
+                        data:
+                          type: object
+                          additionalProperties: true
+                  recommendation: { type: string }
+                  evaluated_at: { type: string, format: date-time }
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /api/v1/intelligence/churn-prediction:
+    post:
+      summary: Get ML-based churn prediction with heuristic fallback
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [tenant_id]
+              properties:
+                tenant_id: { type: string, format: uuid }
+                customer_id: { type: string, format: uuid }
+      responses:
+        '200':
+          description: Churn prediction computed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  tenant_id: { type: string, format: uuid }
+                  customer_id: { type: string, format: uuid, nullable: true }
+                  churn_probability: { type: number }
+                  confidence: { type: number }
+                  risk_level:
+                    type: string
+                    enum: [low, medium, high, unknown]
+                  factors:
+                    type: array
+                    items: { type: string }
+                  recommendation: { type: string }
+                  evaluated_at: { type: string, format: date-time }
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /api/v1/marketplace/modules:
+    get:
+      summary: Browse/search marketplace modules
+      parameters:
+        - name: vertical
+          in: query
+          schema: { type: string }
+        - name: category
+          in: query
+          schema: { type: string }
+        - name: q
+          in: query
+          schema: { type: string }
+          description: Search query
+        - name: clinic_id
+          in: query
+          schema: { type: string, format: uuid }
+          description: If provided, returns installed modules for that clinic
+      responses:
+        '200':
+          description: Module list or installed modules
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+
+  /api/v1/marketplace/install:
+    post:
+      summary: Subscribe a clinic to a marketplace module
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [clinic_id, module_id]
+              properties:
+                clinic_id: { type: string, format: uuid }
+                module_id: { type: string, format: uuid }
+      responses:
+        '200':
+          description: Module installed
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalError'
+    delete:
+      summary: Unsubscribe a clinic from a marketplace module
+      parameters:
+        - name: clinic_id
+          in: query
+          required: true
+          schema: { type: string, format: uuid }
+        - name: module_id
+          in: query
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '200':
+          description: Module uninstalled
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'

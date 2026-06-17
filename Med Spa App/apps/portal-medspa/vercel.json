@@ -1,0 +1,7 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "buildCommand": "cd ../.. && pnpm install && cd apps/portal-medspa && next build",
+  "outputDirectory": ".next",
+  "framework": "nextjs",
+  "regions": ["iad1"]
+}

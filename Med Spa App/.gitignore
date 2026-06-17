@@ -1,0 +1,22 @@
+node_modules/
+dist/
+.next/
+.turbo/
+.env
+.env*.local
+.DS_Store
+*.log
+*.pem
+coverage/
+*.tsbuildinfo
+next-env.d.ts
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+ml-models/models/*.pkl
+ml-models/models/*.joblib
+ml-models/data/
+.venv/
+.ipynb_checkpoints/

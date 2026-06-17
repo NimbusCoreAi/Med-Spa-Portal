@@ -1,0 +1,17 @@
+{
+  "name": "token-optimization",
+  "owner": {
+    "name": "Substrate AI Infrastructure"
+  },
+  "metadata": {
+    "description": "Skills and MCP server for reducing token usage and managing context windows in Claude Code and Claude.ai",
+    "version": "1.0.0"
+  },
+  "plugins": [
+    {
+      "name": "token-guard",
+      "source": "./plugins/token-guard",
+      "description": "Token optimization skills and MCP tools for session management, context auditing, and token-efficient workflows"
+    }
+  ]
+}

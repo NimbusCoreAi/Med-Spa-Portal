@@ -1,0 +1,13 @@
+{
+  "mcpServers": {
+    "baseplate": {
+      "command": "npx",
+      "args": ["tsx", "apps/mcp-server/src/index.ts"],
+      "cwd": "../Med Spa App",
+      "env": {
+        "CONNECT_API_URL": "http://localhost:3001",
+        "CONNECT_API_KEY": "your-api-key-here"
+      }
+    }
+  }
+}

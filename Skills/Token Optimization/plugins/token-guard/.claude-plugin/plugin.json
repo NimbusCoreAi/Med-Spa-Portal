@@ -1,0 +1,10 @@
+{
+  "name": "token-guard",
+  "version": "1.0.0",
+  "description": "Token optimization skills and MCP tools for reducing token usage, managing context windows, session handoffs, and CLAUDE.md discipline",
+  "author": {
+    "name": "Substrate AI Infrastructure"
+  },
+  "license": "MIT",
+  "keywords": ["tokens", "optimization", "context", "session-management", "caching", "cost-reduction"]
+}

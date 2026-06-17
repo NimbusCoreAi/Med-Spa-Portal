@@ -1,0 +1,45 @@
+# Dependencies
+node_modules/
+
+# Build artifacts
+dist/
+build/
+.next/
+.turbo/
+*.tsbuildinfo
+next-env.d.ts
+coverage/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+ml-models/models/*.pkl
+ml-models/models/*.joblib
+ml-models/data/
+.ipynb_checkpoints/
+
+# Environment (keep .example files tracked)
+.env
+.env*.local
+*.pem
+*.key
+
+# OS files
+.DS_Store
+Thumbs.db
+nul
+
+# IDE
+.vscode/
+.idea/
+
+# Claude Code / AI tool local state (CLAUDE.md files ARE tracked)
+.claude/settings.local.json
+.claude/scheduled_tasks.lock
+.opencode/
+.codex/
+
+# Logs
+*.log

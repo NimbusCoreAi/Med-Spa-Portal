@@ -1,0 +1,47 @@
+{
+  "name": "@baseplate/core",
+  "version": "0.1.0",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./client": "./src/client.ts",
+    "./auth": "./src/auth/index.ts",
+    "./rbac": "./src/rbac/index.ts",
+    "./rbac/factory": "./src/rbac/factory.ts",
+    "./audit-logs": "./src/audit-logs/index.ts",
+    "./encryption": "./src/encryption/index.ts",
+    "./config": "./src/config/index.ts",
+    "./types": "./src/types/index.ts",
+    "./intake": "./src/intake/index.ts",
+    "./patients": "./src/patients/index.ts",
+    "./scheduling": "./src/scheduling/index.ts",
+    "./reporting": "./src/reporting/index.ts",
+    "./errors": "./src/errors/index.ts",
+    "./bookings": "./src/bookings/index.ts",
+    "./availability": "./src/availability/index.ts",
+    "./notifications": "./src/notifications/index.ts",
+    "./utils": "./src/utils/index.ts",
+    "./packages": "./src/packages/index.ts",
+    "./monitoring": "./src/monitoring/index.ts",
+    "./billing": "./src/billing/index.ts"
+  },
+  "scripts": {
+    "build": "tsc -b",
+    "test": "jest",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint src/ --ext .ts,.tsx"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.0",
+    "jest": "^29.7.0",
+    "ts-jest": "^29.1.0",
+    "@types/jest": "^29.5.0",
+    "@types/node": "^20.0.0"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.39.0",
+    "stripe": "^15.0.0",
+    "tweetnacl": "^1.0.3"
+  }
+}
