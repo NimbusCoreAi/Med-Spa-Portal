@@ -5,6 +5,7 @@
   "main": "src/index.ts",
   "types": "src/index.ts",
   "exports": {
+    ".": "./src/index.ts",
     "./button": "./src/button.tsx",
     "./input": "./src/input.tsx",
     "./form": "./src/form.tsx",
