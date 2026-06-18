@@ -35,6 +35,7 @@
 - [x] Tasks 11-12: Calendar and Patient List **restyled in place** (dark mode, modern card/slate palette) rather than rebuilt on new libraries (react-big-calendar / tanstack-table) — deliberate scope decision to preserve working functionality (room-conflict detection, payment panel, cancel flow) without the risk of a library swap; Patient List also gained client-side search (name/email/phone)
 - [x] Task 13: Full monorepo verification — `pnpm typecheck` (17/17 packages pass), `pnpm test` (all suites pass, packages/ui 97.95% coverage), `pnpm build` (portal-medspa builds clean, all dashboard routes compile; connect-api's unrelated pre-existing build failure is a missing-env-var issue in the marketplace route, not touched by this work)
 - [x] Task 14: this progress update
+- [x] Final review (subagent code-quality + spec-compliance pass): caught a critical gap — `apps/portal-medspa/tailwind.config.js` never had `darkMode: 'class'` set, so every `dark:` class added this phase was inert (only responded to OS `prefers-color-scheme`, with no in-app toggle). Fixed in commit `5fa6fa7`: added `darkMode: 'class'`, wired a theme-toggle button into `DashboardHeader` using the previously-unused `useTheme` hook, and extended dark mode classes to the dashboard shell (layout/sidebar/header). Re-verified clean (`typecheck` + `build`) after the fix. No other critical/important issues found — review confirmed no fabricated data, no regressions to calendar/patient functionality, and adequate test coverage on new components.
 
 **Phase B — Design system consolidation: ⬜ Not started** (component library restructure, Tailwind docs, Storybook)
 
@@ -315,6 +316,7 @@ postmark, stripe, twilio
 
 | Commit | Description |
 |--------|-------------|
+| `5fa6fa7` | Frontend Redesign Phase A final-review fix: enable functional dark mode (`darkMode: 'class'` + theme toggle in DashboardHeader) |
 | `6ea4a56` | Frontend Redesign Phase A (Task 12): modernize patient list styling + client-side search |
 | `73aa772` | Frontend Redesign Phase A (Task 11): modernize calendar page styling, dark mode |
 | `d43e600` | Frontend Redesign Phase A (Task 10): redesign dashboard page with KPI cards + charts |
