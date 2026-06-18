@@ -3,7 +3,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import type { Appointment, Provider, Room, Patient } from '@baseplate/core/types';
 import { Button } from '@baseplate/ui/button';
-import { Card } from '@baseplate/ui/layout';
 import { IntakeStatusBadge } from '../dashboard/IntakeStatusBadge';
 import { PaymentPanel } from '../payments/PaymentPanel';
 
@@ -134,9 +133,9 @@ export function StaffCalendar({ clinicId }: StaffCalendarProps) {
   }
 
   return (
-    <Card>
+    <div className="rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 p-6 shadow-sm hover:shadow-md transition-shadow">
       <div className="mb-4 flex items-center justify-between">
-        <h2 className="text-lg font-semibold">
+        <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-50">
           Week of {formatDay(weekStart)} – {formatDay(addDays(weekStart, 6))}
         </h2>
         <div className="flex gap-2">
@@ -152,8 +151,8 @@ export function StaffCalendar({ clinicId }: StaffCalendarProps) {
         </div>
       </div>
 
-      {error && <p className="mb-2 text-sm text-red-600">{error}</p>}
-      {loading && <p className="text-sm text-gray-500">Loading...</p>}
+      {error && <p className="mb-2 text-sm text-red-600 dark:text-red-400">{error}</p>}
+      {loading && <p className="text-sm text-slate-500 dark:text-slate-400">Loading...</p>}
 
       {!loading && (
         <div className="grid grid-cols-1 gap-4 md:grid-cols-7">
@@ -168,22 +167,30 @@ export function StaffCalendar({ clinicId }: StaffCalendarProps) {
 
             return (
               <div key={day.toISOString()} className="space-y-2">
-                <h3 className="text-sm font-semibold text-gray-700">{formatDay(day)}</h3>
+                <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-300">{formatDay(day)}</h3>
 
-                {dayAppointments.length === 0 && <p className="text-xs text-gray-400">No appointments</p>}
+                {dayAppointments.length === 0 && (
+                  <p className="text-xs text-slate-400 dark:text-slate-500">No appointments</p>
+                )}
 
                 {dayAppointments.map((appt) => {
                   const hasConflict = roomConflicts.has(appt.id);
                   const isExpanded = expandedId === appt.id;
+                  const statusAccent =
+                    appt.status === 'cancelled'
+                      ? 'border-l-slate-400 dark:border-l-slate-600'
+                      : appt.status === 'completed'
+                        ? 'border-l-green-500 dark:border-l-green-500'
+                        : 'border-l-blue-500 dark:border-l-blue-500';
                   return (
                     <div
                       key={appt.id}
-                      className={`rounded border p-2 text-xs ${
+                      className={`rounded border border-l-4 p-2 text-xs transition-colors ${statusAccent} ${
                         hasConflict
-                          ? 'border-red-400 bg-red-50'
+                          ? 'border-red-400 dark:border-red-600 bg-red-50 dark:bg-red-950/30'
                           : appt.status === 'cancelled'
-                            ? 'border-gray-200 bg-gray-50 opacity-60'
-                            : 'border-gray-200 bg-white'
+                            ? 'border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 opacity-60'
+                            : 'border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950'
                       }`}
                     >
                       <button
@@ -191,11 +198,15 @@ export function StaffCalendar({ clinicId }: StaffCalendarProps) {
                         className="w-full text-left"
                         onClick={() => setExpandedId(isExpanded ? null : appt.id)}
                       >
-                        <p className="font-medium">{formatTime(new Date(appt.scheduled_time))}</p>
-                        <p>{patientName(appt.patient_id)}</p>
-                        <p className="text-gray-500">{providerName(appt.provider_id)}</p>
-                        <p className="text-gray-500">{roomName(appt.room_id)}</p>
-                        {hasConflict && <p className="font-semibold text-red-600">Room conflict</p>}
+                        <p className="font-medium text-slate-900 dark:text-slate-50">
+                          {formatTime(new Date(appt.scheduled_time))}
+                        </p>
+                        <p className="text-slate-700 dark:text-slate-300">{patientName(appt.patient_id)}</p>
+                        <p className="text-slate-500 dark:text-slate-400">{providerName(appt.provider_id)}</p>
+                        <p className="text-slate-500 dark:text-slate-400">{roomName(appt.room_id)}</p>
+                        {hasConflict && (
+                          <p className="font-semibold text-red-600 dark:text-red-400">Room conflict</p>
+                        )}
                       </button>
                       <div className="mt-1 flex items-center justify-between">
                         <IntakeStatusBadge status={appt.intake_completed ? 'completed' : 'not_started'} />
@@ -203,14 +214,14 @@ export function StaffCalendar({ clinicId }: StaffCalendarProps) {
                           <button
                             onClick={() => handleCancel(appt.id)}
                             disabled={cancellingId === appt.id}
-                            className="text-red-600 hover:underline disabled:opacity-50"
+                            className="text-red-600 dark:text-red-400 hover:underline disabled:opacity-50"
                           >
                             {cancellingId === appt.id ? 'Cancelling...' : 'Cancel'}
                           </button>
                         )}
                       </div>
                       {isExpanded && (
-                        <div className="mt-2 border-t border-gray-200 pt-2">
+                        <div className="mt-2 border-t border-slate-200 dark:border-slate-800 pt-2">
                           <PaymentPanel
                             appointment={appt}
                             clinicId={clinicId}
@@ -228,6 +239,6 @@ export function StaffCalendar({ clinicId }: StaffCalendarProps) {
           })}
         </div>
       )}
-    </Card>
+    </div>
   );
 }
