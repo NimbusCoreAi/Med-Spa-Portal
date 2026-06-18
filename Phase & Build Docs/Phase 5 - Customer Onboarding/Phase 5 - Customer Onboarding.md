@@ -35,7 +35,7 @@
 - Offer: Free through Month 6, 20-min feedback call every 2 weeks
 
 ### 2. Production Deploy
-- Deploy to production Vercel + Supabase (not staging)
+- Deploy to production Railway + Supabase (not staging)
 - Configure real Stripe/Postmark/Twilio accounts
 - Onboard clinics with the finished product
 - Verify all integrations work with real patient data

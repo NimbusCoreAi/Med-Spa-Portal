@@ -20,7 +20,7 @@
   - [C. Postmark (Email)](#c-postmark-email)
   - [D. Twilio (SMS)](#d-twilio-sms)
 - [Part 3: Local Development Verification](#part-3-local-development-verification)
-- [Part 4: Staging Deployment (Vercel)](#part-4-staging-deployment-vercel)
+- [Part 4: Staging Deployment (Railway)](#part-4-staging-deployment-railway)
 - [Part 5: Post-Deploy Smoke Test](#part-5-post-deploy-smoke-test)
 - [Parts 6-9: Moved to Phase 5](#parts-6-9-moved-to-phase-5)
 - [Appendix: Environment Variable Reference](#appendix-environment-variable-reference)
@@ -47,7 +47,7 @@ You need accounts on 4 external services before you can deploy. Estimated time: 
 3. Fill in:
    - **Name:** `medspa-portal-prod`
    - **Database Password:** generate a strong password, store it securely
-   - **Region:** `US East (N. Virginia)` — matches the Vercel app region (`iad1`)
+   - **Region:** `US East (N. Virginia)` — select the nearest Railway region (US East) for lowest latency
    - **Pricing Plan:** Free tier for development; upgrade to Pro before pilot launch
 4. Wait ~2 minutes for provisioning
 
@@ -96,7 +96,7 @@ Med Spa App/supabase/migrations/
 4. Set **Site URL** to: `http://localhost:3000` (for now — update to production URL after deploy)
 5. Add **Redirect URLs:**
    - `http://localhost:3000/**`
-   - `https://your-production-domain.vercel.app/**` (add after Vercel deploy)
+   - `https://your-production-domain.up.railway.app/**` (add after Railway deploy)
 
 > **CRITICAL — Email Confirmation:**
 >
@@ -128,14 +128,14 @@ Med Spa App/supabase/migrations/
 
 #### Step 2: Configure the Webhook Endpoint
 
-> **Note:** The webhook endpoint URL won't work until you deploy to Vercel (Part 4).
+> **Note:** The webhook endpoint URL won't work until you deploy to Railway (Part 4).
 > You can skip this step now and come back after deployment. But set up the local
 > testing webhook below.
 
-**For production (after Vercel deploy):**
+**For production (after Railway deploy):**
 
 1. Go to **Developers → Webhooks → Add endpoint**
-2. Set **Endpoint URL** to: `https://YOUR-DOMAIN.vercel.app/api/webhooks/stripe`
+2. Set **Endpoint URL** to: `https://YOUR-DOMAIN.up.railway.app/api/webhooks/stripe`
 3. Select these events (the code handles these specifically):
    - `checkout.session.completed`
    - `payment_intent.succeeded`
@@ -311,7 +311,7 @@ Verify the app loads at **http://localhost:3000**.
 
 ---
 
-## Part 4: Staging Deployment (Vercel)
+## Part 4: Staging Deployment (Railway)
 
 ### Step 1: Push to GitHub
 
@@ -321,54 +321,54 @@ git commit -m "Phase 1 ready for staging deploy"
 git push origin main
 ```
 
-### Step 2: Import into Vercel
+### Step 2: Deploy from GitHub Repo on Railway
 
-1. Go to **https://vercel.com** → sign in
+1. Go to **https://railway.com** → sign in
 2. Click **Add New → Project**
-3. Import your Git repository
+3. Deploy from GitHub repo
 4. **CRITICAL — Root Directory:** Under **Root Directory**, click **Edit** and set it to:
    ```
    Med Spa App/apps/portal-medspa
    ```
-5. The `vercel.json` in that directory handles the build config automatically
+5. Railway auto-detects Next.js via Nixpacks — no config file needed
 
-### Step 3: Add Environment Variables in Vercel
+### Step 3: Add Railway Service Variables
 
-1. In the Vercel project **Settings → Environment Variables**
+1. In the Railway service **Settings → Variables**
 2. Add every variable from your `.env.local`, with this change:
 
 | Variable | Staging Value |
 |----------|-----------------|
-| `NEXT_PUBLIC_APP_URL` | `https://YOUR-PROJECT.vercel.app` |
+| `NEXT_PUBLIC_APP_URL` | `https://YOUR-PROJECT.up.railway.app` |
 | All others | Same as `.env.local` |
 
-3. Ensure `SUPABASE_SERVICE_ROLE_KEY` is set (Vercel won't expose it to the browser since
+3. Ensure `SUPABASE_SERVICE_ROLE_KEY` is set (Railway won't expose it to the browser since
    the name doesn't start with `NEXT_PUBLIC_`)
 
 ### Step 4: Deploy
 
 1. Click **Deploy**
 2. Wait for the build to complete (runs `pnpm install` then `next build`)
-3. App will be live at `https://<project-name>.vercel.app`
+3. App will be live at `https://<project-name>.up.railway.app`
 
 ### Step 5: Post-Deploy Configuration
 
 **Update Stripe webhook to production:**
 1. Go to **Stripe Dashboard → Developers → Webhooks**
-2. Update endpoint URL to: `https://YOUR-DOMAIN.vercel.app/api/webhooks/stripe`
-3. Copy the new signing secret → update `STRIPE_WEBHOOK_SECRET` in Vercel
+2. Update endpoint URL to: `https://YOUR-DOMAIN.up.railway.app/api/webhooks/stripe`
+3. Copy the new signing secret → update `STRIPE_WEBHOOK_SECRET` in Railway
 4. Redeploy (or it will pick up on next push)
 
 **Update Supabase Auth URLs:**
 1. Go to **Supabase Dashboard → Authentication → URL Configuration**
-2. Set **Site URL** to your production Vercel domain
-3. Ensure **Redirect URLs** includes `https://YOUR-DOMAIN.vercel.app/**`
+2. Set **Site URL** to your production Railway domain
+3. Ensure **Redirect URLs** includes `https://YOUR-DOMAIN.up.railway.app/**`
 
 > **Note:** Switching to production Stripe keys happens in Phase 5. For Phase 1 staging, use Stripe test keys only.
 
 - [ ] Code pushed to GitHub
-- [ ] Project imported into Vercel (root directory set correctly)
-- [ ] All env vars added in Vercel
+- [ ] Project deployed on Railway (root directory set correctly)
+- [ ] All env vars added in Railway
 - [ ] First deployment successful
 - [ ] Stripe webhook URL updated to staging
 - [ ] Supabase auth URLs updated to staging

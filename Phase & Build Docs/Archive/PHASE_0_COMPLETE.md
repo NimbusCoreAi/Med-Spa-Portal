@@ -150,7 +150,7 @@ Before Phase 1 Week 1 starts, confirm:
 
 - [ ] **Vertical locked in** → Med Spas (gate passed)
 - [ ] **3 pilot leads identified** → Confirmed contact + interest (onboarding deferred to Phase 5)
-- [ ] **Tech setup ready** → Monorepo initialized, Supabase project created, Vercel account
+- [ ] **Tech setup ready** → Monorepo initialized, Supabase project created, Railway account
 - [ ] **Development tools tested** → Cursor + Claude tested (1-hour challenge is optional; build proceeded directly to Phase 1A)
 - [ ] **All docs reviewed** → Understand pain points + modules to build
 - [ ] **Team aligned** → Everyone knows Phase 1A focus (Auth + Intake)
@@ -200,7 +200,7 @@ Before Phase 1 Week 1 starts, confirm:
 ### Next Week (Pre-Phase 1 Week 1)
 1. Initialize monorepo (baseplate structure)
 2. Create Supabase project + database
-3. Set up Vercel deployment
+3. Set up Railway deployment
 4. Test Cursor + Claude with 1-hour throwaway dashboard
 5. Review pilot lead list (contact happens in Phase 5)
 

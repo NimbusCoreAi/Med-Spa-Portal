@@ -491,7 +491,7 @@ Repeat Phase 1 & 2, but faster because infrastructure exists.
 - [ ] Update domain-specific language (e.g., "patients" → "customers", "treatments" → "services", "intake forms" → "service request forms")
 - [ ] Keep same tech stack, same `packages/core` dependency, same Connect integration
 - [ ] Build and test all vertical-specific features locally
-- [ ] Deploy to Vercel (staging — production onboarding deferred to Phase 5)
+- [ ] Deploy to Railway (staging — production onboarding deferred to Phase 5)
 
 **Build phase 1:** Infrastructure & core modules
 - Create the app structure

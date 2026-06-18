@@ -296,9 +296,9 @@ Use `session-handoff` skill between phase transitions to keep context fresh.
 - Twilio (SMS)
 
 **Hosting:**
-- Vercel (frontend)
+- Railway (frontend)
 - Supabase (database)
-- Render/Fly.io (APIs, Phase 2+)
+- Railway (APIs, Phase 2+)
 
 ---
 

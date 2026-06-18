@@ -663,20 +663,20 @@ ALTER TABLE appointments ADD CONSTRAINT no_provider_conflicts
 
 ---
 
-## Task 1D.6: Deploy to Staging (Vercel)
+## Task 1D.6: Deploy to Staging (Railway)
 
 **Skills to Use:**
 1. `/skill add-feature` (for deployment config)
 
 **What to Build:**
-- Vercel staging deployment
+- Railway staging deployment
 - Environment configuration (staging keys)
 - SSL certificates
 - Database backups
 
 **Steps:**
 
-1. Deploy to Vercel (staging — do NOT use `--prod`):
+1. Deploy to Railway (staging — do NOT use `--prod`):
    - Connect GitHub repo
    - Set environment variables (staging)
    - Deploy portal-medspa app to staging
@@ -721,7 +721,7 @@ ALTER TABLE appointments ADD CONSTRAINT no_provider_conflicts
    - [ ] Stripe webhook error handling improvements
 
 4. Staging deploy + smoke test:
-   - [ ] Deploy to Vercel staging
+   - [ ] Deploy to Railway staging
    - [ ] Verify full happy path end-to-end
    - [ ] Login/signup, booking, intake, payment, notifications all working
 
@@ -784,7 +784,7 @@ ALTER TABLE appointments ADD CONSTRAINT no_provider_conflicts
 - [ ] Payment link generation
 - [ ] Notification sending
 - [ ] Dashboard with metrics
-- [ ] Deployed to Vercel staging
+- [ ] Deployed to Railway staging
 
 ## Module Library Gaps ✅
 - [ ] Error handling module extracted

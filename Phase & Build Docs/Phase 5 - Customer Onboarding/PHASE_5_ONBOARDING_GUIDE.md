@@ -150,12 +150,12 @@ FEEDBACK CALL SCHEDULE: [Biweekly: every other ___day at ___time]
 ### A. Stripe — Switch to Live Mode
 
 1. Go to **Stripe Dashboard** → exit Test Mode (toggle top right)
-2. Copy the **live secret key** (`sk_live_...`) → update `STRIPE_SECRET_KEY` in Vercel
+2. Copy the **live secret key** (`sk_live_...`) → update `STRIPE_SECRET_KEY` in Railway
 3. Go to **Developers → Webhooks** → update endpoint URL to production domain
-4. Copy the live **signing secret** (`whsec_...`) → update `STRIPE_WEBHOOK_SECRET` in Vercel
+4. Copy the live **signing secret** (`whsec_...`) → update `STRIPE_WEBHOOK_SECRET` in Railway
 5. Create **Stripe Products** for subscription tiers (Connect, Intelligence add-on) — needed for revenue conversion later
 
-- [ ] Stripe live keys set in Vercel
+- [ ] Stripe live keys set in Railway
 - [ ] Webhook endpoint updated to production URL
 - [ ] Webhook signing secret updated
 - [ ] Test a live payment (process a $1 test charge, verify webhook fires)
@@ -194,15 +194,15 @@ FEEDBACK CALL SCHEDULE: [Biweekly: every other ___day at ___time]
 - [ ] Production from-email set
 - [ ] Test email received successfully
 
-### E. Vercel — Update Environment Variables + Redeploy
+### E. Railway — Update Environment Variables + Redeploy
 
-1. Go to **Vercel → Project Settings → Environment Variables**
+1. Go to **Railway → Service → Variables**
 2. Update all variables to production values:
    - `NEXT_PUBLIC_APP_URL` → production domain
    - `STRIPE_SECRET_KEY` → live key
    - `STRIPE_WEBHOOK_SECRET` → live signing secret
    - All others as needed
-3. **Redeploy** (Vercel → Deployments → Redeploy)
+3. **Redeploy** (Railway → Service → Settings → Redeploy)
 
 - [ ] All env vars updated to production values
 - [ ] Production deployment successful

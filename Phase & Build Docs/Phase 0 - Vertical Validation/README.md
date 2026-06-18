@@ -172,7 +172,7 @@ Contains:
 Before Phase 1 Week 1 starts:
 
 - [ ] **Pilot Confirmations** — Confirm 3 clinic owners are ready to pilot (have contact + interest level)
-- [ ] **Tech Setup** — Monorepo initialized, Supabase project created, Vercel account ready
+- [ ] **Tech Setup** — Monorepo initialized, Supabase project created, Railway account ready
 - [ ] **Design System** — Tailwind CSS component library started
 - [ ] **Database Schema** — Mapped out based on Phase 0 requirements
 - [ ] **Development Workflow** — Cursor + Claude tools tested + validated
@@ -276,7 +276,7 @@ Of all 12 pain points, intake + scheduling are the most universally felt and eas
 ### Pre-Phase 1 Week 1 (Next Week)
 - [ ] Initialize monorepo (baseplate, packages, apps structure)
 - [ ] Create Supabase project + database
-- [ ] Set up Vercel
+- [ ] Set up Railway
 - [ ] Configure GitHub (private repo)
 - [ ] Test Cursor + Claude AI development loop with 1-hour throwaway challenge
 

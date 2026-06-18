@@ -36,7 +36,7 @@ Typed TypeScript client for the Connect API. Import and go.
 ## How It Works (3 steps)
 1. **Scaffold** — Clone, install, configure env vars
 2. **Connect** — Wire Connect API for payments, SMS, intelligence
-3. **Launch** — Deploy to Vercel, onboard customers
+3. **Launch** — Deploy to Railway, onboard customers
 
 ## Pricing (Phase 5+)
 

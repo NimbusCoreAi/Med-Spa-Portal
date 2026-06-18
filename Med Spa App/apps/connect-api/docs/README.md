@@ -6,7 +6,7 @@
 2. Make your first call:
 
 ```bash
-curl -X POST https://connect-api-xxx.vercel.app/api/v1/reporting/treatment-metrics \
+curl -X POST https://connect-api-xxx.up.railway.app/api/v1/reporting/treatment-metrics \
   -H "x-api-key: YOUR_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{"clinic_id":"your-clinic-uuid","group_by":"service_type"}'
@@ -99,7 +99,7 @@ curl -X POST .../api/v1/reporting/treatment-metrics \
 ### JavaScript
 
 ```javascript
-const response = await fetch('https://connect-api-xxx.vercel.app/api/v1/communications/sms-reminder', {
+const response = await fetch('https://connect-api-xxx.up.railway.app/api/v1/communications/sms-reminder', {
   method: 'POST',
   headers: {
     'x-api-key': process.env.CONNECT_API_KEY,
@@ -121,7 +121,7 @@ const data = await response.json();
 import requests
 
 response = requests.post(
-    'https://connect-api-xxx.vercel.app/api/v1/communications/sms-reminder',
+    'https://connect-api-xxx.up.railway.app/api/v1/communications/sms-reminder',
     headers={
         'x-api-key': os.environ['CONNECT_API_KEY'],
         'Content-Type': 'application/json',

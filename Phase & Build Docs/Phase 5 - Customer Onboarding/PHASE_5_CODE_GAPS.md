@@ -280,7 +280,7 @@ export function logMetric(name: string, value: number, context?: Record<string, 
 ```
 
 Implementation:
-- In production: structured JSON to stdout (Vercel captures)
+- In production: structured JSON to stdout (Railway captures)
 - In development: colorized console output
 - Context object merged into every log entry
 - Error stack traces captured for `logError`
@@ -327,7 +327,7 @@ packages/core/src/index.ts                          ← add monitoring export
 | Subagent | Category | Purpose |
 |----------|----------|---------|
 | `sre-engineer` | 03-Infrastructure | Monitoring strategy, alerting thresholds, log aggregation |
-| `devops-engineer` | 03-Infrastructure | Health check endpoint design, Vercel log integration |
+| `devops-engineer` | 03-Infrastructure | Health check endpoint design, Railway log integration |
 | `backend-developer` | 01-Core Development | Structured logging module implementation |
 | `typescript-pro` | 02-Language Specialists | Type-safe log levels, context typing |
 | `code-reviewer` | 04-Quality & Security | Review error boundary coverage, verify no silent failures |
@@ -620,7 +620,7 @@ apps/portal-medspa/src/app/dashboard/layout.tsx        ← add FeedbackWidget to
 
 ### Deployment
 
-- Deploy FastAPI serve endpoint to Railway, Fly.io, or Vercel serverless
+- Deploy FastAPI serve endpoint to Railway or Fly.io
 - Set `ML_SERVE_URL` env var on Connect API
 
 ### Files Summary

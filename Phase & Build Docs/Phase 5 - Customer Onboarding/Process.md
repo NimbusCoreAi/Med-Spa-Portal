@@ -22,7 +22,7 @@ The staging deployment from Phase 1 proved the app works. Now deploy to producti
 - [ ] Upgrade Supabase from Free tier to Pro (required for production traffic)
 - [ ] Upgrade Twilio from Trial to paid account (removes trial restrictions)
 - [ ] Configure production Postmark sender domain (DKIM verified)
-- [ ] Update all Vercel environment variables to production values
+- [ ] Update all Railway environment variables to production values
 - [ ] Set up production Stripe webhook endpoint with live signing secret
 - [ ] Update Supabase Auth URLs to production domain
 - [ ] Enable email confirmation (now that server-side signup exists from Phase 2)

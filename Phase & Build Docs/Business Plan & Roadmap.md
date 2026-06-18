@@ -83,7 +83,7 @@ Premium predictive APIs built on the data flowing through Connect.
 | Tier | Price | What it includes |
 |---|---|---|
 | **Free (Scaffold)** | $0 | Full open-source template code. Self-host, self-maintain. Drives adoption and GitHub presence. |
-| **Managed Hosting** *(deferred — see note)* | $29–$299/mo | One-click deploy of the Scaffold template (Vercel/Render/Fly.io under the hood), managed updates, backups, SSL, monitoring. |
+| **Managed Hosting** *(deferred — see note)* | $29–$299/mo | One-click deploy of the Scaffold template (Railway under the hood), managed updates, backups, SSL, monitoring. |
 | **Connect Usage** | $0 free tier, then $49–$500/mo | Tiered by API call volume / number of connected integrations. Free tier covers dev/testing; production usage requires a paid plan. |
 | **Intelligence (Risk Flags / Predictions)** | $99–$500/mo (early) → $500–$5K/mo (mature ML) | Per-account or per-seat pricing for risk scoring, churn flags, attribution reports. |
 | **Marketplace (Phase 4)** | 20% take rate | Third-party modules (compliance packs, advanced invoicing, industry-specific add-ons) sold through the platform. |
@@ -191,7 +191,7 @@ See `COLD_OUTREACH_PLAYBOOK.md` for outreach templates (email, LinkedIn, and 4 m
 - Real-world integrations: Stripe payments, Postmark email, Twilio SMS
 - Scheduling: Providers, rooms, appointments, conflict prevention, self-booking
 - Reporting: Revenue, appointments, no-show rate, intake completion analytics
-- Deployment config: Vercel, CI/CD
+- Deployment config: Railway, CI/CD
 
 **Close Module Library Gaps (AI-accelerated):**
 - Extract: errors, bookings, availability, hooks, next-api, notifications, utils, dates
@@ -283,7 +283,7 @@ See `COLD_OUTREACH_PLAYBOOK.md` for outreach templates (email, LinkedIn, and 4 m
 - Offer: Free through Month 6, 20-min feedback calls every 2 weeks
 
 **Production Deploy:**
-- Deploy to production Vercel + Supabase
+- Deploy to production Railway + Supabase
 - Configure real Stripe/Postmark/Twilio accounts
 - Onboard clinics with the finished product
 
@@ -338,7 +338,7 @@ Chosen for AI-agent-friendliness (well-represented in training data, strong tool
 - **Database:** Postgres (via Supabase or Neon) — relational integrity matters for payments/audit logs; Supabase also bundles auth primitives that can bootstrap `baseplate-core`
 - **Payments:** Stripe (Connect's first and most important integration)
 - **Email/SMS:** Postmark (email) + Twilio (SMS, add later if pilots need it)
-- **Hosting:** Vercel (frontend) + Render/Fly.io (Connect API, since it needs to run independently of any one Scaffold deployment)
+- **Hosting:** Railway (frontend + Connect API, since the Connect API needs to run independently of any one Scaffold deployment)
 - **Auth:** Supabase Auth or Clerk — do not hand-roll auth; this is exactly the kind of "gnarly but solved" problem to delegate to a proven provider, then wrap it in `baseplate-core` for portability
 
 ### Repository Structure
@@ -348,7 +348,7 @@ Use a single monorepo (pnpm workspaces + Turborepo) from the start, even as a so
 ```
 Med Spa App/                      # Monorepo root (also referenced as "baseplate/" in some docs)
   apps/
-    portal-medspa/                # Med spa Scaffold template (Phase 1) — deployed to Vercel
+    portal-medspa/                # Med spa Scaffold template (Phase 1) — deployed to Railway
     connect-api/                  # Layer 2 (built out starting Phase 2), deployed independently
   packages/
     core/                         # baseplate-core: auth wrapper, RBAC, audit log, encryption
@@ -359,7 +359,7 @@ Med Spa App/                      # Monorepo root (also referenced as "baseplate
   pnpm-workspace.yaml
 ```
 
-`packages/core` and `packages/ui` are consumed by `apps/portal-[vertical]` from day one, even though there's only one vertical app — this is what makes Golden Rule #3 ("Modular over Monolith") concrete rather than aspirational. When the second vertical template is built in Phase 3, it becomes `apps/portal-[vertical-2]` consuming the same `packages/core`, proving the abstraction without a rewrite. `apps/connect-api` deploys to Render/Fly.io independently of the Vercel-hosted portal apps, since it needs to be reachable by external developers' Scaffold deployments in Phase 2+.
+`packages/core` and `packages/ui` are consumed by `apps/portal-[vertical]` from day one, even though there's only one vertical app — this is what makes Golden Rule #3 ("Modular over Monolith") concrete rather than aspirational. When the second vertical template is built in Phase 3, it becomes `apps/portal-[vertical-2]` consuming the same `packages/core`, proving the abstraction without a rewrite. `apps/connect-api` deploys as a second Railway service (separate from the Railway-hosted portal apps), since it needs to be reachable by external developers' Scaffold deployments in Phase 2+.
 
 ---
 
@@ -414,12 +414,12 @@ This table reflects *today's* landscape, not a static one. If "vertical Scaffold
 |---|---|---|
 | Domain (baseplate.dev or similar) | ~$1/mo (amortized annual) | same |
 | Supabase (DB + Auth) | $0 (free tier) | $25/mo (Pro, once usage grows) |
-| Vercel (Scaffold hosting) | $0 (free tier) | $20/mo (Pro, if pilot traffic exceeds free limits) |
-| Render/Fly.io (Connect API) | $0 (not yet built) | $7-25/mo |
+| Railway (Scaffold hosting) | ~$5/mo (Hobby) | $20/mo (Pro, if pilot traffic grows) |
+| Railway (Connect API) | $0 (not yet built) | $7-25/mo |
 | Stripe | $0/mo + 2.9% + $0.30/transaction | same |
 | Postmark (email) | $0 (free tier, 100/mo) | $15/mo (10K emails) |
 | Twilio (SMS, optional) | $0 (not used yet) | ~$0.0079/SMS, pay-as-you-go |
-| **Total estimated burn** | **< $5/mo** | **~$75-150/mo** |
+| **Total estimated burn** | **~$5-6/mo** | **~$75-150/mo** |
 
 ### Time Commitment Assumption
 
@@ -427,7 +427,7 @@ The roadmap (Section 8) assumes roughly **15-20 hours/week** (evenings/weekends,
 
 ### Runway Implication
 
-At a burn rate under $5/mo through Phase 1, and under $150/mo through Phases 2-4, this project requires **no external funding** to reach its first revenue gate (Phase 5: $500+ MRR, Section 9). Phase 5 revenue covers infrastructure costs with significant margin. This is a deliberate design constraint, not an oversight — it means there is no financial pressure forcing premature scope expansion.
+At a burn rate of ~$5-6/mo through Phase 1, and under $150/mo through Phases 2-4, this project requires **no external funding** to reach its first revenue gate (Phase 5: $500+ MRR, Section 9). Phase 5 revenue covers infrastructure costs with significant margin. This is a deliberate design constraint, not an oversight — it means there is no financial pressure forcing premature scope expansion.
 
 ---
 
@@ -439,7 +439,7 @@ These items are easy to skip early but become expensive to retrofit once pilot u
 - **Terms of Service + Privacy Policy (before Phase 5 pilots go live).** Use a generator (Termly, GetTerms) for a baseline ToS/Privacy Policy covering data handling, since pilots are handling real end-customer data (tenants, patients, clients) through the portal.
 - **Stripe account under the business entity**, not a personal account — required for Connect endpoints to eventually process real transaction volume.
 - **Vertical-specific considerations:**
-  - **Med Spas (chosen vertical):** Do not store Protected Health Information (medical history, treatment notes, photos) in the portal without a BAA in place with infrastructure providers (Supabase, Vercel). Scope strictly to scheduling, contact info, and payment — this keeps the system outside HIPAA's PHI definition until HIPAA-eligible infrastructure is in place. Any future health-data features require HIPAA-eligible infrastructure (e.g., AWS BAA-covered services, Supabase Pro with BAA) before being built. **Note:** The intake forms capture medical history and consent — execute a BAA with Supabase before Phase 5 pilot launch, or restrict intake to non-PHI fields only. This is resolved during Phase 1 build completion.
+  - **Med Spas (chosen vertical):** Do not store Protected Health Information (medical history, treatment notes, photos) in the portal without a BAA in place with infrastructure providers (Supabase). Note: Vercel/Railway do not offer a HIPAA BAA — migrate the app host to a BAA-signed provider (AWS/GCP/Azure) before processing real PHI. Scope strictly to scheduling, contact info, and payment — this keeps the system outside HIPAA's PHI definition until HIPAA-eligible infrastructure is in place. Any future health-data features require HIPAA-eligible infrastructure (e.g., AWS BAA-covered services, Supabase Pro with BAA) before being built. **Note:** The intake forms capture medical history and consent — execute a BAA with Supabase before Phase 5 pilot launch, or restrict intake to non-PHI fields only. This is resolved during Phase 1 build completion.
 - **Data Processing Addendum (Phase 5+).** Once Connect is processing real third-party data for paying customers, add a basic DPA to the Connect terms — most B2B buyers will eventually ask for one.
 
 ---

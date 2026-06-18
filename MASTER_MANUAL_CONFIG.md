@@ -4,6 +4,7 @@
 > This is NOT a planning doc — it is the operational execution checklist. Update it as you go.
 > Pair with: `MASTER_PROGRESS.md` (project status) and `Med Spa App/CLAUDE.md` (dev commands).
 > Last updated: June 2026 — **ALL CODE COMPLETE + SECURITY AUDITED + 41 FINDINGS REMEDIATED (27 migrations, 270+ tests)**
+> **CONFIG IN PROGRESS:** Supabase, Stripe, Twilio, GitHub accounts created. `.env.local` wired up (5 creds still missing). Migrations + Supabase auth config next.
 
 ---
 
@@ -34,6 +35,19 @@
 > What remains is **entirely manual**: account creation, deploys, configuration, customer recruitment.
 > No more code needs to be written (except ML training after pilot data exists).
 
+### ⚡ Next Actions (do these in order)
+
+| # | Action | Where | Status |
+|---|--------|-------|--------|
+| 1 | ~~Get Supabase secret key~~ → paste into `.env.local` `SUPABASE_SERVICE_ROLE_KEY` | Supabase Dashboard → Settings → API Keys → `sb_secret_...` | [x] |
+| 2 | ~~Run all 27 migrations~~ on Supabase | `supabase db push` (DONE) | [x] |
+| 3 | **Disable email confirmation** in Supabase Auth (critical for signup to work) | Supabase Dashboard → Authentication → Settings | [ ] |
+| 4 | **Set Site URL + Redirect URLs** to `http://localhost:3000` | Supabase Dashboard → Authentication → URL Configuration | [ ] |
+| 5 | **Buy Twilio phone number** → paste into `.env.local` `TWILIO_PHONE_NUMBER` | Twilio Console → Phone Numbers → Buy | [ ] |
+| 6 | **Install Stripe CLI + run webhook listener** → paste `whsec_...` into `.env.local` | `stripe listen --forward-to localhost:3000/api/webhooks/stripe` | [ ] |
+| 7 | **Resolve Postmark/Email** — use Resend (free) or buy a domain | See Section 2.5 | [ ] |
+| 8 | **Run `pnpm dev`** in `Med Spa App/` and test signup flow | Local | [ ] |
+
 ---
 
 ## Table of Contents
@@ -59,12 +73,12 @@
 
 | Service | URL | Account Email | Plan / Tier | Phase Needed | Account Created |
 |---------|-----|---------------|-------------|--------------|-----------------|
-| Supabase | supabase.com | ____________ | Free (→ Pro in Phase 5) | Phase 1 | [ ] |
-| Stripe | dashboard.stripe.com | ____________ | Test Mode (→ Live in Phase 5) | Phase 1 | [ ] |
-| Postmark | postmarkapp.com | ____________ | Free trial / Developer | Phase 1 | [ ] |
-| Twilio | twilio.com | ____________ | Trial (→ Paid in Phase 5) | Phase 1 | [ ] |
-| Vercel | vercel.com | ____________ | Hobby (Free) | Phase 1 | [ ] |
-| GitHub | github.com | ____________ | Free | Phase 1 | [ ] |
+| Supabase | supabase.com | NimbusCoreAi | Free (→ Pro in Phase 5) | Phase 1 | [x] |
+| Stripe | dashboard.stripe.com | NimbusCoreAi | Test Mode (→ Live in Phase 5) | Phase 1 | [x] |
+| Postmark | postmarkapp.com | — Gmail rejected (see notes) | Free trial / Developer | Phase 1 | [! ] |
+| Twilio | twilio.com | NimbusCoreAi | Trial (→ Paid in Phase 5) | Phase 1 | [x] |
+| Railway | railway.com | ____________ | Hobby (~$5/mo + usage) | Phase 1 | [ ] |
+| GitHub | github.com/NimbusCoreAi | NimbusCoreAi | Free | Phase 1 | [x] |
 | Upstash | console.upstash.com | ____________ | Free (10K cmds/day) | Phase 2C | [ ] |
 | npm | npmjs.com | ____________ | Free | Phase 4C | [ ] |
 | AWS (KMS) | aws.amazon.com | ____________ | Per-use pricing | Phase 5B | [ ] |
@@ -74,25 +88,25 @@
 
 ### 1.2 Credentials Tracker
 
-> Check the box once the credential is generated and stored in your password manager. Actual values go in `.env.local` (local) or Vercel env vars (deployed).
+> Check the box once the credential is generated and stored in your password manager. Actual values go in `.env.local` (local) or Railway service variables (deployed).
 
 | Credential | Env Var(s) | Phase Needed | Stored |
 |------------|-----------|--------------|--------|
-| Supabase Project URL | `NEXT_PUBLIC_SUPABASE_URL`, `SUPABASE_URL` | Phase 1 | [ ] |
-| Supabase anon key | `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_ANON_KEY` | Phase 1 | [ ] |
-| Supabase service_role key | `SUPABASE_SERVICE_ROLE_KEY` | Phase 1 | [ ] |
+| Supabase Project URL | `NEXT_PUBLIC_SUPABASE_URL`, `SUPABASE_URL` | Phase 1 | [x] |
+| Supabase anon/publishable key | `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_ANON_KEY` | Phase 1 | [x] |
+| Supabase service_role/secret key | `SUPABASE_SERVICE_ROLE_KEY` | Phase 1 | [x] |
 | Supabase DB password | _(stored in password manager only)_ | Phase 1 | [ ] |
-| Stripe secret key (test) | `STRIPE_SECRET_KEY` | Phase 1 | [ ] |
-| Stripe webhook signing secret (test) | `STRIPE_WEBHOOK_SECRET` | Phase 1 | [ ] |
+| Stripe secret key (test) | `STRIPE_SECRET_KEY` | Phase 1 | [x] |
+| Stripe webhook signing secret (test) | `STRIPE_WEBHOOK_SECRET` | Phase 1 | **[ ] MISSING — run `stripe listen` or create dashboard webhook** |
 | Stripe secret key (live) | `STRIPE_SECRET_KEY` | Phase 5A | [ ] |
 | Stripe webhook signing secret (live) | `STRIPE_WEBHOOK_SECRET` | Phase 5A | [ ] |
 | **Stripe Price ID — Connect plan** | `STRIPE_PRICE_CONNECT` | Phase 5A | [ ] |
 | **Stripe Price ID — Intelligence add-on** | `STRIPE_PRICE_INTELLIGENCE` | Phase 5A | [ ] |
-| Postmark Server API token | `POSTMARK_API_TOKEN` | Phase 1 | [ ] |
-| Postmark sender email | `POSTMARK_FROM_EMAIL` | Phase 1 | [ ] |
-| Twilio Account SID | `TWILIO_ACCOUNT_SID` | Phase 1 | [ ] |
-| Twilio Auth Token | `TWILIO_AUTH_TOKEN` | Phase 1 | [ ] |
-| Twilio phone number (E.164) | `TWILIO_PHONE_NUMBER` | Phase 1 | [ ] |
+| Postmark Server API token | `POSTMARK_API_TOKEN` | Phase 1 | **[ ] MISSING — Gmail signup rejected** |
+| Postmark sender email | `POSTMARK_FROM_EMAIL` | Phase 1 | **[ ] MISSING — see Postmark notes below** |
+| Twilio Account SID | `TWILIO_ACCOUNT_SID` | Phase 1 | [x] |
+| Twilio Auth Token | `TWILIO_AUTH_TOKEN` | Phase 1 | [x] |
+| Twilio phone number (E.164) | `TWILIO_PHONE_NUMBER` | Phase 1 | **[ ] MISSING — buy number in Twilio Console** |
 | Connect API key (shared) | `CONNECT_API_KEY` | Phase 2B | [ ] |
 | Upstash Redis REST URL | `UPSTASH_REDIS_REST_URL` | Phase 2C | [ ] |
 | Upstash Redis REST token | `UPSTASH_REDIS_REST_TOKEN` | Phase 2C | [ ] |
@@ -103,11 +117,15 @@
 
 | Item | Value | Phase Needed | Configured |
 |------|-------|--------------|------------|
+| Supabase project ref | `xahvcetvyypjduqfcqfq` | Phase 1 | [x] |
+| Supabase project URL | `https://xahvcetvyypjduqfcqfq.supabase.co` | Phase 1 | [x] |
+| GitHub repo | `https://github.com/NimbusCoreAi/Med-Spa-Portal.git` | Phase 1 | [x] |
+| GitHub initial commit | `f8005c5` pushed to `origin/main` | Phase 1 | [x] |
 | Production domain | ____________ | Phase 5A | [ ] |
 | DNS provider | ____________ | Phase 1/5A | [ ] |
 | Postmark DKIM record | _(from Postmark dashboard)_ | Phase 1 | [ ] |
 | Postmark Return-Path record | _(from Postmark dashboard)_ | Phase 1 | [ ] |
-| Vercel DNS (A record / CNAME) | _(from Vercel dashboard)_ | Phase 5A | [ ] |
+| Railway custom domain (CNAME) | _(from Railway dashboard)_ | Phase 5A | [ ] |
 
 ---
 
@@ -118,45 +136,47 @@
 
 ### 2.1 Create External Service Accounts
 
-- [ ] **Supabase** — Sign up at supabase.com
-- [ ] **Supabase** — Create new project
+- [x] **Supabase** — Sign up at supabase.com
+- [x] **Supabase** — Create new project (ref: `xahvcetvyypjduqfcqfq`)
   - Name: `medspa-portal-staging`
-  - Region: `US East (N. Virginia)` — **must match Vercel `iad1` region**
+   - Region: `US East (N. Virginia)` — **select the nearest Railway region (US East) for lowest latency**
   - Pricing: Free tier
   - Generate strong DB password → store in password manager
-- [ ] **Stripe** — Sign up at dashboard.stripe.com → switch to **Test Mode**
-- [ ] **Postmark** — Sign up at postmarkapp.com
+- [x] **Stripe** — Sign up at dashboard.stripe.com → switch to **Test Mode**
+- [!] **Postmark** — Sign up at postmarkapp.com — **BLOCKED: Gmail rejected (DMARC policy). See Section 2.5 notes.**
 - [ ] **Postmark** — Create a Server (e.g., "Med Spa Portal")
-- [ ] **Twilio** — Sign up at twilio.com → complete setup wizard → verify your phone number
-- [ ] **Vercel** — Sign up at vercel.com
-- [ ] **GitHub** — Ensure repo exists and is pushed
+- [x] **Twilio** — Sign up at twilio.com → complete setup wizard → verify your phone number
+- [ ] **Railway** — Sign up at railway.com
+- [x] **GitHub** — Repo created and initial commit pushed: `https://github.com/NimbusCoreAi/Med-Spa-Portal.git`
 
 ### 2.2 Generate API Keys & Credentials
 
-- [ ] **Supabase** → Project Settings → API → copy **Project URL**
-  - → `NEXT_PUBLIC_SUPABASE_URL` and `SUPABASE_URL`
-- [ ] **Supabase** → Project Settings → API → copy **anon public** key
+- [x] **Supabase** → Project Settings → API → copy **Project URL**
+  - → `NEXT_PUBLIC_SUPABASE_URL` and `SUPABASE_URL` = `https://xahvcetvyypjduqfcqfq.supabase.co`
+- [x] **Supabase** → Project Settings → API → copy **publishable** key (`sb_publishable_...`)
   - → `NEXT_PUBLIC_SUPABASE_ANON_KEY` and `SUPABASE_ANON_KEY`
-- [ ] **Supabase** → Project Settings → API → copy **service_role** key (server-only, bypasses RLS)
+- [x] **Supabase** → Project Settings → API → copy **secret_key** (`sb_secret_...`) (server-only, bypasses RLS)
   - → `SUPABASE_SERVICE_ROLE_KEY`
-- [ ] **Stripe** → Developers → API Keys → copy **Secret key** (`sk_test_...`)
+- [x] **Stripe** → Developers → API Keys → copy **Secret key** (`sk_test_...`)
   - → `STRIPE_SECRET_KEY`
 - [ ] **Postmark** → Server → API Tokens → copy **Server API token**
-  - → `POSTMARK_API_TOKEN`
+  - → `POSTMARK_API_TOKEN` — **⚠️ BLOCKED (Gmail issue)**
 - [ ] **Postmark** → Sender Signatures or Domains → note verified sender email
-  - → `POSTMARK_FROM_EMAIL`
-- [ ] **Twilio** → Console → Dashboard → copy **Account SID** (`AC...`)
+  - → `POSTMARK_FROM_EMAIL` — **⚠️ BLOCKED**
+- [x] **Twilio** → Console → Dashboard → copy **Account SID** (`AC...` redacted — do not commit real SID)
   - → `TWILIO_ACCOUNT_SID`
-- [ ] **Twilio** → Console → Dashboard → click "Show" → copy **Auth Token**
+- [x] **Twilio** → Console → Dashboard → click "Show" → copy **Auth Token**
   - → `TWILIO_AUTH_TOKEN`
 - [ ] **Twilio** → Phone Numbers → Manage → Buy a number → copy E.164 number
-  - → `TWILIO_PHONE_NUMBER`
+  - → `TWILIO_PHONE_NUMBER` — **⚠️ STILL NEEDED**
   - Note: Trial accounts get a free number but can only send to verified numbers
   - Add pilot/test phone numbers to "Verified Caller IDs" while on trial
 
 ### 2.3 Run Database Migrations
 
-> Run each migration file via **Supabase Dashboard → SQL Editor**. Copy SQL from each file in `Med Spa App/supabase/migrations/`, paste, click Run. **Must run in exact numeric order.**
+> **✅ ALL 27 MIGRATIONS APPLIED** via `supabase db push` (linked to project `xahvcetvyypjduqfcqfq`).
+> 5 migration files were fixed for Supabase compatibility during deployment — see Section 10.11 for details.
+> If you need to re-run on a fresh project: `cd "Med Spa App" && supabase link --project-ref xahvcetvyypjduqfcqfq && supabase db push`
 
 **Phase 1 Migrations (core portal):**
 - [ ] `0001_init_clinics.sql` — Tables: `clinics`, `staff`, `patients`, `audit_logs` + indexes
@@ -202,8 +222,8 @@
 ### 2.4 Configure Supabase Dashboard
 
 - [ ] **Auth → Providers** — Ensure **Email** provider is enabled (default on)
-- [ ] **Auth → URL Configuration** — Set **Site URL** to `http://localhost:3000` (update to Vercel domain after deploy)
-- [ ] **Auth → URL Configuration** — Add **Redirect URLs**: `http://localhost:3000/**` (add Vercel domain after deploy)
+- [ ] **Auth → URL Configuration** — Set **Site URL** to `http://localhost:3000` (update to Railway domain after deploy)
+- [ ] **Auth → URL Configuration** — Add **Redirect URLs**: `http://localhost:3000/**` (add Railway domain after deploy)
 - [ ] **CRITICAL: Auth → Settings** — **Disable "Confirm email"**
   - If left ON, `signUp()` creates the user but does NOT establish a session, causing clinic + staff inserts to fail.
   - Re-enable in Phase 5A after production deploy.
@@ -212,17 +232,49 @@
 
 ### 2.5 Postmark Email Verification
 
-Choose ONE method:
+> **WHY YOU NEED A TRANSACTIONAL EMAIL SERVICE:**
+> Your app sends automated emails: appointment confirmations, intake form links, payment receipts,
+> password resets. You can't send these from a personal Gmail/Outlook account because:
+> 1. Email providers limit automated/sending volume (Gmail caps ~500/day, blocks programmatic SMTP)
+> 2. Without SPF/DKIM/DMARC DNS records, emails land in spam
+> 3. You need delivery analytics (bounces, opens, spam complaints) for production
+> Postmark (and alternatives like Resend) solve all of this — they're SMTP relays optimized for
+> transactional email with built-in deliverability infrastructure.
 
-**Option A — Sender Signature (faster, for testing):**
-- [ ] Postmark → Sender Signatures → Add signature email
-- [ ] Check inbox → click confirmation link
+> **WHY POSTMARK REJECTS GMAIL:**
+> Gmail (and Yahoo/AOL) enforce a strict DMARC policy (`p=reject`). This means no third-party
+> server (like Postmark) is allowed to send email "from" a `@gmail.com` address — it will be
+> rejected/bounced. This is an anti-spam measure, not a Postmark bug.
 
-**Option B — Domain Authentication (recommended for production):**
-- [ ] Postmark → Domains → Add domain
+> **HOW TO FIX — Choose ONE:**
+
+**Option A — Use Resend.com instead (FREE TIER, fastest path) (RECOMMENDED for testing):**
+- [ ] Sign up at https://resend.com (accepts Gmail login, free tier = 3,000 emails/month)
+- [ ] Verify your email address (Resend lets you send FROM your Gmail as a verified sender on free tier)
+- [ ] Get API key → store as `POSTMARK_API_TOKEN` (the code uses this var name — Resend's API is SMTP-compatible)
+- [ ] Set `POSTMARK_FROM_EMAIL` to your verified Gmail address
+- [ ] **Note:** The `@baseplate/core/notifications` module uses the `postmark` npm package. For Resend,
+      either: (a) use Resend's SMTP relay (host: `smtp.resend.com`, port 587), or (b) swap the Postmark
+      client for Resend's SDK (`resend` npm package) in `packages/integrations/postmark/`.
+      **SMTP relay requires no code change** — Postmark supports custom SMTP hosts.
+
+**Option B — Buy a custom domain ($10-15/year) and use Postmark properly:**
+- [ ] Buy a cheap domain (Namecheap, Cloudflare, Porkbun — ~$10/yr for `.com` or ~$2/yr for `.xyz`)
+- [ ] Postmark → Domains → Add your domain
 - [ ] Add provided **DKIM DNS record** to your DNS provider's control panel
 - [ ] Add **Return-Path DNS record** to your DNS provider
 - [ ] Wait for verification (minutes to hours)
+- [ ] Set `POSTMARK_FROM_EMAIL=noreply@yourdomain.com`
+
+**Option C — Postmark Sender Signature with a non-Gmail address:**
+- [ ] Use a custom domain email, a work email, or an Outlook/Yahoo address
+- [ ] Postmark → Sender Signatures → Add signature email
+- [ ] Check inbox → click confirmation link
+
+**Option D — Skip email for now (defer to Phase 5):**
+- [ ] The app will still run — email sending fails gracefully (logged, not crashed)
+- [ ] SMS notifications (Twilio) and all other features work without email
+- [ ] Come back to this when you have a custom domain or choose Resend
 
 ### 2.6 Stripe Webhook Registration
 
@@ -233,9 +285,9 @@ Choose ONE method:
 - [ ] Run `stripe listen --forward-to localhost:3000/api/webhooks/stripe`
 - [ ] Capture `whsec_...` signing secret → `STRIPE_WEBHOOK_SECRET` in `.env.local`
 
-**For production (after Vercel deploy — see 2.10):**
+**For production (after Railway deploy — see 2.10):**
 - [ ] Stripe Dashboard → Developers → Webhooks → Add endpoint
-  - URL: `https://YOUR-DOMAIN.vercel.app/api/webhooks/stripe`
+  - URL: `https://YOUR-DOMAIN.up.railway.app/api/webhooks/stripe`
   - **Register ALL of these events:**
     - `checkout.session.completed`
     - `payment_intent.succeeded`
@@ -243,8 +295,8 @@ Choose ONE method:
     - `customer.subscription.created` *(Phase 5 — subscription billing)*
     - `customer.subscription.updated` *(Phase 5 — subscription billing)*
     - `customer.subscription.deleted` *(Phase 5 — subscription billing)*
-- [ ] Copy endpoint's signing secret → update `STRIPE_WEBHOOK_SECRET` in Vercel
-- [ ] Redeploy Vercel project to pick up new webhook secret
+- [ ] Copy endpoint's signing secret → update `STRIPE_WEBHOOK_SECRET` in Railway
+- [ ] Redeploy Railway service to pick up new webhook secret
 
 ### 2.7 Local Environment Setup
 
@@ -286,29 +338,29 @@ Choose ONE method:
 **Fallback (if signup fails or staff record not created):**
 - [ ] Manually run SQL in Supabase SQL Editor to insert the owner staff record. The `id` MUST be the auth user's UUID, role must be `'owner'`.
 
-### 2.9 Vercel Deployment
+### 2.9 Railway Deployment
 
-- [ ] Push code to GitHub: ensure `pnpm-lock.yaml` is committed
+- [x] Push code to GitHub: `pnpm-lock.yaml` is committed, initial commit `f8005c5` pushed to `https://github.com/NimbusCoreAi/Med-Spa-Portal.git`
 - [ ] **Replace `<PUBLIC_REPO_URL>` placeholder** in 3 files:
   - `Med Spa App/package.json` (root)
   - `Med Spa App/packages/sdk/package.json`
   - `Med Spa App/README.md`
-- [ ] Vercel → Add New → Project → Import Git repository
-- [ ] **CRITICAL:** Set **Root Directory** to `Med Spa App/apps/portal-medspa`
-- [ ] Framework Preset: Next.js (should auto-detect)
-- [ ] Add all environment variables in Settings → Environment Variables (see [Section 8](#8-environment-variables-master-list))
-  - Update `NEXT_PUBLIC_APP_URL` to your Vercel domain
+- [ ] Railway → New Project → Deploy from GitHub repo
+- [ ] **CRITICAL:** Set **Root Directory** to `Med Spa App/apps/portal-medspa` (so the pnpm workspace resolves)
+- [ ] Buildpack: Railway auto-detects Next.js via Nixpacks (no config file required)
+- [ ] Add all environment variables under the Service → Variables tab (see [Section 8](#8-environment-variables-master-list))
+  - Update `NEXT_PUBLIC_APP_URL` to your Railway domain
 - [ ] Click **Deploy** — wait for build (~2-3 min)
-- [ ] App live at `https://<project-name>.vercel.app`
+- [ ] App live at `https://<project-name>.up.railway.app`
 
 ### 2.10 Post-Deploy Configuration Updates
 
-- [ ] **Stripe webhook** → update endpoint to `https://YOUR-DOMAIN.vercel.app/api/webhooks/stripe`
+- [ ] **Stripe webhook** → update endpoint to `https://YOUR-DOMAIN.up.railway.app/api/webhooks/stripe`
   - Ensure ALL 6 events are registered (see Section 2.6)
-- [ ] Copy new signing secret → update `STRIPE_WEBHOOK_SECRET` in Vercel → redeploy
-- [ ] **Supabase Auth URLs** → set Site URL to `https://YOUR-DOMAIN.vercel.app`
-- [ ] **Supabase Auth URLs** → add Redirect URL `https://YOUR-DOMAIN.vercel.app/**`
-- [ ] **SSL** — Vercel provides automatic HTTPS/TLS — verify it's active
+- [ ] Copy new signing secret → update `STRIPE_WEBHOOK_SECRET` in Railway → redeploy
+- [ ] **Supabase Auth URLs** → set Site URL to `https://YOUR-DOMAIN.up.railway.app`
+- [ ] **Supabase Auth URLs** → add Redirect URL `https://YOUR-DOMAIN.up.railway.app/**`
+- [ ] **SSL** — Railway provides automatic HTTPS/TLS — verify it's active
 
 ### 2.11 Post-Deploy Smoke Test
 
@@ -329,7 +381,7 @@ Choose ONE method:
 - [ ] Audit Logs page — loads, shows recent actions
 - [ ] **Feedback widget** — click floating button → submit feedback → verify in `/dashboard/feedback`
 - [ ] **Pricing page** — `/pricing` renders with 3 tiers
-- [ ] **Health check** — `curl https://YOUR-DOMAIN.vercel.app/api/health` returns healthy status
+- [ ] **Health check** — `curl https://YOUR-DOMAIN.up.railway.app/api/health` returns healthy status
 - [ ] Logout — redirected to login
 
 **Patient-Facing Flow:**
@@ -390,7 +442,7 @@ Choose ONE method:
 
 ### 3B — Connect API Build & Deploy
 
-> Connect API deploys to Vercel as a **second Next.js project** (not Render/Express — see [Section 10](#10-discrepancies--reconciliation-notes)).
+> Connect API deploys to Railway as a **second service** (not Render/Express — see [Section 10](#10-discrepancies--reconciliation-notes)).
 
 **Database Migration:**
 - [ ] Run migration **`0009_credit_packages.sql`** on staging Supabase (via SQL Editor)
@@ -401,21 +453,21 @@ Choose ONE method:
 - [ ] Per-clinic API keys are now stored in the `clinic_api_keys` table (migration `0016`). The Connect API authenticates each request by SHA-256 hashing the `x-api-key` header and looking up the hash.
 - [ ] To enable Connect API access for a clinic, insert a row: `INSERT INTO clinic_api_keys (clinic_id, key_hash) VALUES ('<clinic-uuid>', '<sha256-of-key>')`. Generate the raw key with `openssl rand -hex 32`, store the raw key in your password manager, and store `echo -n '<raw-key>' | sha256sum | cut -d' ' -f1` as `key_hash`.
 - [ ] The **portal no longer proxies through the Connect API** — it calls `@baseplate/core` and `@baseplate/marketplace` functions directly using the session's `clinicId`. The `CONNECT_API_KEY` env var is only needed if you deploy the Connect API for **external integrators** (third-party apps using the SDK).
-- [ ] The `CONNECT_API_URL` and `CONNECT_API_KEY` env vars are **no longer required for the portal** (portal-medspa). Only set them on the connect-api Vercel project.
+- [ ] The `CONNECT_API_URL` and `CONNECT_API_KEY` env vars are **no longer required for the portal** (portal-medspa). Only set them on the connect-api Railway service.
 
 **Environment Variables (Local):**
 - [ ] Add `CONNECT_API_URL=http://localhost:3001` to portal `.env.local` and Connect API `.env.local`
 - [ ] Add `CONNECT_API_KEY=<your-key>` to portal `.env.local` and Connect API `.env.local`
 
-**Connect API Deployment (Vercel):**
+**Connect API Deployment (Railway):**
 - [ ] Push code to GitHub
-- [ ] Vercel → New Project → Import repo
+- [ ] Railway → New Project → Deploy from GitHub repo
 - [ ] Set **Root Directory** to `Med Spa App/apps/connect-api`
-- [ ] Add env vars to Vercel: `CONNECT_API_KEY`, `SUPABASE_URL`, `SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN`, `TWILIO_PHONE_NUMBER`
+- [ ] Add env vars to Railway service: `CONNECT_API_KEY`, `SUPABASE_URL`, `SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN`, `TWILIO_PHONE_NUMBER`
 - [ ] Deploy
-- [ ] Test health endpoint: `curl https://connect-api-xxx.vercel.app/api/health`
+- [ ] Test health endpoint: `curl https://connect-api-xxx.up.railway.app/api/health`
 - [ ] Test authenticated endpoint: `curl -X POST .../api/v1/reporting/treatment-metrics -H "x-api-key: YOUR_KEY" ...`
-- [ ] Update portal's `CONNECT_API_URL` in Vercel env vars to production Connect API URL
+- [ ] Update portal's `CONNECT_API_URL` in Railway service variables to production Connect API URL
 
 **Manual End-to-End Testing:**
 - [ ] Test SMS reminder endpoint → verify Twilio SMS sent
@@ -430,7 +482,7 @@ Choose ONE method:
 - [ ] Create a Redis database (free tier: 10K commands/day)
 - [ ] Copy `UPSTASH_REDIS_REST_URL`
 - [ ] Copy `UPSTASH_REDIS_REST_TOKEN`
-- [ ] Add both to Connect API env vars in Vercel
+- [ ] Add both to Connect API env vars in Railway
 - [ ] Install dependencies in connect-api: `@upstash/redis` + `@upstash/ratelimit`
 
 **Rate Limit Testing:**
@@ -441,7 +493,7 @@ Choose ONE method:
   - Copy the Price ID (`price_xxx`) → this is your `STRIPE_PRICE_CONNECT` env var
 - [ ] Stripe Dashboard → Products → Create: **Intelligence** — $99/mo recurring (add-on)
   - Copy the Price ID (`price_xxx`) → this is your `STRIPE_PRICE_INTELLIGENCE` env var
-- [ ] Add `STRIPE_PRICE_CONNECT` and `STRIPE_PRICE_INTELLIGENCE` to portal `.env.local` and Vercel env vars
+- [ ] Add `STRIPE_PRICE_CONNECT` and `STRIPE_PRICE_INTELLIGENCE` to portal `.env.local` and Railway service variables
 - [ ] **Do NOT** activate public billing yet — just create the products
 
 **Load Testing:**
@@ -496,7 +548,7 @@ Choose ONE method:
 - [x] Domain language updated ("patients" → "customers", "treatments" → "services")
 - [x] RBAC factory built (`createRBAC()` for configurable roles)
 - [ ] Connect second vertical portal to Stripe/Postmark/Supabase for testing
-- [ ] Deploy to Vercel staging
+- [ ] Deploy to Railway staging
 - [ ] Verify portal works end-to-end with synthetic data
 
 ### 4C — ML Infrastructure Scaffolding
@@ -597,10 +649,10 @@ Choose ONE method:
 #### Stripe — Switch to Live Mode
 
 - [ ] Stripe Dashboard → exit Test Mode (toggle top right)
-- [ ] Copy **live secret key** (`sk_live_...`) → update `STRIPE_SECRET_KEY` in Vercel
+- [ ] Copy **live secret key** (`sk_live_...`) → update `STRIPE_SECRET_KEY` in Railway
 - [ ] Stripe Dashboard → Developers → Webhooks → update endpoint URL to production domain
   - **Ensure all 6 events are registered** (see Section 2.6 for full list including subscription events)
-- [ ] Copy **live webhook signing secret** → update `STRIPE_WEBHOOK_SECRET` in Vercel
+- [ ] Copy **live webhook signing secret** → update `STRIPE_WEBHOOK_SECRET` in Railway
 - [ ] Verify Stripe Products exist for subscription tiers (created in Phase 2C):
   - **Connect** ($49/mo) → Price ID = `STRIPE_PRICE_CONNECT`
   - **Intelligence** ($99/mo add-on) → Price ID = `STRIPE_PRICE_INTELLIGENCE`
@@ -629,24 +681,24 @@ Choose ONE method:
 - [ ] Update `POSTMARK_FROM_EMAIL` to production domain (e.g., `noreply@yourdomain.com`)
 - [ ] Test sending an email through the production app → confirm receipt
 
-#### Vercel — Production Config
+#### Railway — Production Config
 
-- [ ] Update ALL environment variables to production values (Vercel → Project Settings → Environment Variables):
+- [ ] Update ALL environment variables to production values (Railway → Service → Variables):
   - `NEXT_PUBLIC_APP_URL` → production domain
   - `STRIPE_SECRET_KEY` → live key
   - `STRIPE_WEBHOOK_SECRET` → live signing secret
   - `STRIPE_PRICE_CONNECT` → live Price ID (from Stripe products)
   - `STRIPE_PRICE_INTELLIGENCE` → live Price ID (from Stripe products)
   - `POSTMARK_FROM_EMAIL` → production domain email
-- [ ] Redeploy (Vercel → Deployments → Redeploy)
+- [ ] Redeploy (Railway → Service → Settings → Redeploy)
 - [ ] Verify app loads at production URL without errors
 
 #### DNS / Domain Configuration
 
-- [ ] Configure production domain DNS — point to Vercel deployment (A record or CNAME per Vercel requirements)
+- [ ] Configure production domain DNS — add a CNAME record pointing to your Railway service (per Railway custom-domain settings)
 - [ ] Verify DKIM DNS records for Postmark email domain authentication
 - [ ] Verify Return-Path DNS records for Postmark
-- [ ] Verify SSL certificate is active (Vercel provides automatic HTTPS/TLS)
+- [ ] Verify SSL certificate is active (Railway provides automatic HTTPS/TLS)
 
 #### Production Smoke Test (15 steps)
 
@@ -675,12 +727,12 @@ Choose ONE method:
 #### BAAs & Legal Agreements
 
 - [ ] **Sign Supabase BAA** — available at https://supabase.com/docs/guides/security/hipaa
-  - Requires Supabase Pro tier (Section 6A)
-- [ ] **Sign Vercel DPA** — or upgrade to Vercel Enterprise plan
+  - Requires Supabase Pro tier (Section 6A). Supabase (with BAA) is where PHI can live at rest.
+- [ ] ⚠️ **Railway does NOT offer a HIPAA BAA** (no tier does). Railway is acceptable for **dev / staging / early production with NO real PHI**. Before any real Protected Health Information is stored or processed by the app host, **migrate the portal + Connect API to a HIPAA-eligible host with a signed BAA** (AWS, GCP, or Azure). A DPA is GDPR, not HIPAA — it does not satisfy the BAA requirement. See [Section 7.9](#79-legal--compliance-agreements-tracker) for the migration path.
 
 #### Encryption Activation
 
-- [ ] Set `PHI_ENABLED=true` in environment variables (Vercel + Supabase)
+- [ ] Set `PHI_ENABLED=true` in environment variables (Railway + Supabase)
 - [ ] Generate encryption keys via the `generateKey()` function (TweetNaCl module)
 - [ ] **Set up AWS KMS** (or equivalent key management service) for production encryption key storage
 - [ ] Store encryption keys securely in AWS KMS
@@ -830,7 +882,7 @@ Record these BEFORE the clinic starts using the portal for real patients:
 - [ ] Train LTV (lifetime value) model on real pilot data
 - [ ] Train demand forecasting model on real pilot data
 - [ ] Validate model accuracy against pilot data
-- [ ] Deploy FastAPI serve endpoint (Railway/Fly.io/Vercel) — set `ML_SERVER_URL` env var on Connect API
+- [ ] Deploy FastAPI serve endpoint (Railway / Fly.io) — set `ML_SERVER_URL` env var on Connect API
 - [ ] Update Connect API churn-prediction endpoint to call ML serve (currently uses heuristic fallback)
 - [ ] Surface ML insights in pilot dashboards
 - [ ] Collect feedback on ML insight usefulness from pilot clinics
@@ -896,16 +948,16 @@ Record these BEFORE the clinic starts using the portal for real patients:
 
 | Phase | Task | Status |
 |-------|------|--------|
-| 1 | Create account, switch to Test Mode | [ ] |
-| 1 | Copy test secret key → `STRIPE_SECRET_KEY` | [ ] |
+| 1 | Create account, switch to Test Mode | [x] |
+| 1 | Copy test secret key → `STRIPE_SECRET_KEY` | [x] |
 | 1 | Set up Stripe CLI for local webhook testing → `STRIPE_WEBHOOK_SECRET` | [ ] |
 | 1 | Register webhook endpoint with **6 events** (3 payment + 3 subscription) | [ ] |
 | 2C | Create pricing products: Connect ($49/mo) → `STRIPE_PRICE_CONNECT` | [ ] |
 | 2C | Create pricing products: Intelligence ($99/mo) → `STRIPE_PRICE_INTELLIGENCE` | [ ] |
 | 5A | Switch to Live Mode | [ ] |
-| 5A | Copy live secret key → update Vercel `STRIPE_SECRET_KEY` | [ ] |
+| 5A | Copy live secret key → update Railway `STRIPE_SECRET_KEY` | [ ] |
 | 5A | Update webhook endpoint to production domain (all 6 events) | [ ] |
-| 5A | Copy live webhook signing secret → update Vercel | [ ] |
+| 5A | Copy live webhook signing secret → update Railway | [ ] |
 | 5A | Test live $1 payment, verify webhook fires | [ ] |
 | 5G | Set up subscriptions for converted pilot clinics | [ ] |
 | 5G | Set up billing automation (invoices, retries, dunning) | [ ] |
@@ -915,20 +967,20 @@ Record these BEFORE the clinic starts using the portal for real patients:
 
 | Phase | Task | Status |
 |-------|------|--------|
-| 1 | Create project (`medspa-portal-staging`, US East, Free tier) | [ ] |
-| 1 | Copy Project URL, anon key, service_role key | [ ] |
-| 1 | Run migrations **0001-0008** (Phase 1 core, in order) | [ ] |
+| 1 | Create project (`medspa-portal-staging`, US East, Free tier) | [x] |
+| 1 | Copy Project URL, anon/publishable key, service_role key | [~] URL + publishable key done; **secret key still needed** |
+| 1 | Run migrations **0001-0008** (Phase 1 core, in order) | [x] |
 | 1 | Enable Email auth provider | [ ] |
 | 1 | Set Site URL + Redirect URLs | [ ] |
 | 1 | **CRITICAL:** Disable email confirmation (for Phase 1) | [ ] |
 | 1 | Enable daily backups | [ ] |
-| 1 (post-deploy) | Update Site URL + Redirect URLs to Vercel domain | [ ] |
-| 2B | Run migrations **0009, 0010, 0011** (Connect API + packages + fixes) | [ ] |
-| 3A | Run migration **0012** (intelligence seed data) | [ ] |
-| 4A | Run migration **0013** (marketplace tables) | [ ] |
-| **5** | Run migrations **0014, 0015** (subscriptions + feedback tables) | [ ] |
-| **Sec** | Run migrations **0016-0023** (per-clinic API keys, payments table, webhook idempotency, RLS fixes, patient unique, room exclusion, ON DELETE, package expiry) | [ ] |
-| **Sec** | Run migrations **0024-0027** (money→cents, is_synthetic seed column, dashboard RPC, performance indexes) | [ ] |
+| 1 (post-deploy) | Update Site URL + Redirect URLs to Railway domain | [ ] |
+| 2B | Run migrations **0009, 0010, 0011** (Connect API + packages + fixes) | [x] |
+| 3A | Run migration **0012** (intelligence seed data) | [x] |
+| 4A | Run migration **0013** (marketplace tables) | [x] |
+| **5** | Run migrations **0014, 0015** (subscriptions + feedback tables) | [x] |
+| **Sec** | Run migrations **0016-0023** (per-clinic API keys, payments table, webhook idempotency, RLS fixes, patient unique, room exclusion, ON DELETE, package expiry) | [x] |
+| **Sec** | Run migrations **0024-0027** (money→cents, is_synthetic seed column, dashboard RPC, performance indexes) | [x] |
 | 5A | Upgrade to **Pro tier** ($25/mo) | [ ] |
 | 5A | Set Site URL to production domain | [ ] |
 | 5A | Add production domain to Redirect URLs | [ ] |
@@ -937,22 +989,22 @@ Record these BEFORE the clinic starts using the portal for real patients:
 | 5B | Sign **BAA** (requires Pro tier) | [ ] |
 | 5B | Set up scheduled job for 6-year audit log retention | [ ] |
 
-### 7.3 All Vercel Tasks
+### 7.3 All Railway Tasks
 
 | Phase | Task | Status |
 |-------|------|--------|
-| 1 | Import repo, set Root Directory to `apps/portal-medspa` | [ ] |
-| 1 | Add environment variables (see Section 8) | [ ] |
+| 1 | Create project, set Root Directory to `apps/portal-medspa` | [ ] |
+| 1 | Add service variables (see Section 8) | [ ] |
 | 1 | Deploy portal | [ ] |
 | 1 (post-deploy) | Update `STRIPE_WEBHOOK_SECRET` → redeploy | [ ] |
-| 2B | Import repo again for Connect API, set Root Directory to `apps/connect-api` | [ ] |
-| 2B | Add Connect API env vars | [ ] |
+| 2B | Create second Railway service for Connect API, set Root Directory to `apps/connect-api` | [ ] |
+| 2B | Add Connect API service variables | [ ] |
 | 2B | Deploy Connect API | [ ] |
 | 2B | Update portal's `CONNECT_API_URL` to production Connect API URL | [ ] |
 | 3B | Deploy home services portal to staging | [ ] |
-| 5A | Update ALL env vars to production values (including `STRIPE_PRICE_*`) | [ ] |
+| 5A | Update ALL service variables to production values (including `STRIPE_PRICE_*`) | [ ] |
 | 5A | Redeploy | [ ] |
-| 5B | Sign DPA or upgrade to Enterprise plan | [ ] |
+| 5B | ⚠️ No HIPAA BAA available on Railway — migrate to AWS/GCP/Azure (with BAA) before processing PHI | [ ] |
 
 ### 7.4 All Postmark Tasks
 
@@ -971,10 +1023,10 @@ Record these BEFORE the clinic starts using the portal for real patients:
 
 | Phase | Task | Status |
 |-------|------|--------|
-| 1 | Create account, complete setup wizard, verify your phone | [ ] |
-| 1 | Copy Account SID → `TWILIO_ACCOUNT_SID` | [ ] |
-| 1 | Copy Auth Token → `TWILIO_AUTH_TOKEN` | [ ] |
-| 1 | Buy SMS-capable phone number → `TWILIO_PHONE_NUMBER` | [ ] |
+| 1 | Create account, complete setup wizard, verify your phone | [x] |
+| 1 | Copy Account SID → `TWILIO_ACCOUNT_SID` | [x] |
+| 1 | Copy Auth Token → `TWILIO_AUTH_TOKEN` | [x] |
+| 1 | Buy SMS-capable phone number → `TWILIO_PHONE_NUMBER` | **[ ] MISSING** |
 | 1 | Add pilot/test phone numbers to Verified Caller IDs (trial only) | [ ] |
 | 5A | Add payment method | [ ] |
 | 5A | Upgrade to paid account | [ ] |
@@ -1005,8 +1057,8 @@ Record these BEFORE the clinic starts using the portal for real patients:
 |------|----------|-------|------|
 | Postmark DKIM record | DNS provider → Postmark | 1 / 5A | [ ] |
 | Postmark Return-Path record | DNS provider → Postmark | 1 / 5A | [ ] |
-| Production domain → Vercel (A record / CNAME) | DNS provider → Vercel | 5A | [ ] |
-| SSL certificate (automatic via Vercel) | Vercel | 5A | [ ] |
+| Production domain → Railway (CNAME) | DNS provider → Railway | 5A | [ ] |
+| SSL certificate (automatic via Railway) | Railway | 5A | [ ] |
 | Supabase Site URL → production domain | Supabase dashboard | 5A | [ ] |
 | Supabase Redirect URLs → production domain | Supabase dashboard | 5A | [ ] |
 
@@ -1015,8 +1067,10 @@ Record these BEFORE the clinic starts using the portal for real patients:
 | Agreement | Provider | Phase | Required Before | Signed |
 |-----------|----------|-------|-----------------|--------|
 | BAA (Business Associate Agreement) | Supabase | 5B | Any real PHI stored | [ ] |
-| DPA (Data Processing Agreement) | Vercel | 5B | Any real PHI processed | [ ] |
+| BAA (app host — AWS/GCP/Azure) | AWS/GCP/Azure | 5B | Any real PHI processed on the app host | [ ] |
 | Pilot Agreement (informal email) | Each pilot clinic | 5C | Pilot onboarding begins | [ ] |
+
+> ⚠️ **Railway does not offer a HIPAA BAA.** Keep PHI out of the app host (Railway) until you migrate to a BAA-signed provider (AWS/GCP/Azure). Supabase (with BAA) can hold PHI at rest; the portal/Connect API on Railway should be treated as a no-PHI tier until migrated.
 
 ### 7.10 Billing Upgrade Timeline
 
@@ -1025,7 +1079,7 @@ Record these BEFORE the clinic starts using the portal for real patients:
 | Supabase | Free | Pro | 5A | $25/mo | [ ] |
 | Stripe | Test Mode | Live Mode | 5A | Per-transaction | [ ] |
 | Twilio | Trial | Paid | 5A | Per-usage | [ ] |
-| Vercel | Hobby | Pro/Enterprise (if DPA needed) | 5B | $20+/mo | [ ] |
+| Railway | Hobby (~$5/mo + usage) | Migrate app host to AWS/GCP/Azure (BAA) when PHI needed | 5B | ~$5+/mo | [ ] |
 | Postmark | Developer | Standard (if volume) | 5A+ | $15+/mo | [ ] |
 
 ---
@@ -1033,7 +1087,7 @@ Record these BEFORE the clinic starts using the portal for real patients:
 ## 8. Environment Variables Master List
 
 > Complete list of every environment variable across all phases.
-> Local: `apps/portal-medspa/.env.local` | Deployed: Vercel → Project Settings → Environment Variables
+> Local: `apps/portal-medspa/.env.local` | Deployed: Railway → Service → Variables
 
 ### Phase 1 — Portal (Required)
 
@@ -1099,38 +1153,39 @@ Record these BEFORE the clinic starts using the portal for real patients:
 
 ## 9. Migration Tracker
 
-> Run via Supabase Dashboard → SQL Editor. Must run in numeric order.
-> **Total: 27 migrations. All additive (no destructive changes).**
+> Run via Supabase Dashboard → SQL Editor or `supabase db push` CLI.
+> **✅ ALL 27 MIGRATIONS APPLIED** via `supabase db push` (project ref: `xahvcetvyypjduqfcqfq`).
+> 5 migration files were fixed for PostgreSQL/Supabase compatibility during deployment (see Section 10.11).
 
 | # | File | What It Creates | Phase | Run |
 |---|------|-----------------|-------|-----|
-| 0001 | `0001_init_clinics.sql` | `clinics`, `staff`, `patients`, `audit_logs` + indexes | 1 | [ ] |
-| 0002 | `0002_rls_policies.sql` | RLS on all 4 tables + access policies | 1 | [ ] |
-| 0003 | `0003_intake_forms.sql` | `intake_forms`, `intake_submissions` + RLS | 1 | [ ] |
-| 0004 | `0004_scheduling.sql` | `providers`, `rooms`, `appointments` + GIST constraint + RLS | 1 | [ ] |
-| 0005 | `0005_payments.sql` | Payment columns on `appointments` | 1 | [ ] |
-| 0006 | `0006_rename_treatment_to_service.sql` | `treatment_type` → `service_type` | 1 | [ ] |
-| 0007 | `0007_tighten_rls_policies.sql` | Removes overly permissive policies | 1 | [ ] |
-| 0008 | `0008_staff_insert_policy.sql` | INSERT policy on `staff` for signup | 1 | [ ] |
-| 0009 | `0009_credit_packages.sql` | `credit_packages`, `package_transactions` + RLS | 2B | [ ] |
-| 0010 | `0010_api_usage.sql` | `api_usage` table for metering | 2C | [ ] |
-| 0011 | `0011_fix_package_deduction.sql` | Fixes atomic deduction RPC | 2B | [ ] |
-| 0012 | `0012_intelligence_seed.sql` | Synthetic test data for risk scoring | 3A | [ ] |
-| 0013 | `0013_marketplace.sql` | `modules`, `installed_modules`, `module_subscriptions` | 4A | [ ] |
-| **0014** | **`0014_subscriptions.sql`** | **`subscriptions` table + RLS (Phase 5 billing)** | **5** | [ ] |
-| **0015** | **`0015_feedback.sql`** | **`feedback` table + RLS (Phase 5 feedback widget)** | **5** | [ ] |
-| 0016 | `0016_api_keys.sql` | `clinic_api_keys` table (per-clinic hashed API keys) | Sec | [ ] |
-| 0017 | `0017_payments_table.sql` | `payments` table (standalone payment records) | Sec | [ ] |
-| 0018 | `0018_stripe_events.sql` | `processed_stripe_events` table (webhook idempotency) | Sec | [ ] |
-| 0019 | `0019_fix_rls_identity.sql` | Fixes RLS identity drift on subscriptions + feedback | Sec | [ ] |
-| 0020 | `0020_patient_unique_email.sql` | Unique constraint patients(clinic_id, lower(email)) | Sec | [ ] |
-| 0021 | `0021_room_exclusion.sql` | GiST exclusion constraint (room double-booking) | Sec | [ ] |
-| 0022 | `0022_on_delete_policies.sql` | ON DELETE cascade/set null on FKs | Sec | [ ] |
-| 0023 | `0023_package_expiry_guard.sql` | Blocks deduction on expired packages (RPC) | Sec | [ ] |
-| 0024 | `0024_money_cents.sql` | Converts amount columns from NUMERIC dollars to INTEGER cents (idempotent) | Data | [ ] |
-| 0025 | `0025_seed_is_synthetic.sql` | `is_synthetic` column on 6 tables for seed cleanup | Data | [ ] |
-| 0026 | `0026_dashboard_metrics_rpc.sql` | `get_dashboard_metrics()` SQL function | Data | [ ] |
-| 0027 | `0027_performance_indexes.sql` | Composite indexes (appointments, payments, patients, marketplace) | Data | [ ] |
+| 0001 | `0001_init_clinics.sql` | `clinics`, `staff`, `patients`, `audit_logs` + indexes | 1 | [x] |
+| 0002 | `0002_rls_policies.sql` | RLS on all 4 tables + access policies | 1 | [x] |
+| 0003 | `0003_intake_forms.sql` | `intake_forms`, `intake_submissions` + RLS | 1 | [x] |
+| 0004 | `0004_scheduling.sql` | `providers`, `rooms`, `appointments` + GIST constraint + RLS | 1 | [x] *(fixed: immutable expr)* |
+| 0005 | `0005_payments.sql` | Payment columns on `appointments` | 1 | [x] |
+| 0006 | `0006_rename_treatment_to_service.sql` | `treatment_type` → `service_type` | 1 | [x] *(fixed: idempotent guard)* |
+| 0007 | `0007_tighten_rls_policies.sql` | Removes overly permissive policies | 1 | [x] |
+| 0008 | `0008_staff_insert_policy.sql` | INSERT policy on `staff` for signup | 1 | [x] |
+| 0009 | `0009_credit_packages.sql` | `credit_packages`, `package_transactions` + RLS | 2B | [x] |
+| 0010 | `0010_api_usage.sql` | `api_usage` table for metering | 2C | [x] |
+| 0011 | `0011_fix_package_deduction.sql` | Fixes atomic deduction RPC | 2B | [x] |
+| 0012 | `0012_intelligence_seed.sql` | Synthetic test data for risk scoring | 3A | [x] *(fixed: auth.users FK, UUIDs, payments conditional)* |
+| 0013 | `0013_marketplace.sql` | `modules`, `installed_modules`, `module_subscriptions` | 4A | [x] |
+| **0014** | **`0014_subscriptions.sql`** | **`subscriptions` table + RLS (Phase 5 billing)** | **5** | [x] |
+| **0015** | **`0015_feedback.sql`** | **`feedback` table + RLS (Phase 5 feedback widget)** | **5** | [x] |
+| 0016 | `0016_api_keys.sql` | `clinic_api_keys` table (per-clinic hashed API keys) | Sec | [x] |
+| 0017 | `0017_payments_table.sql` | `payments` table (standalone payment records) | Sec | [x] |
+| 0018 | `0018_stripe_events.sql` | `processed_stripe_events` table (webhook idempotency) | Sec | [x] |
+| 0019 | `0019_fix_rls_identity.sql` | Fixes RLS identity drift on subscriptions + feedback | Sec | [x] |
+| 0020 | `0020_patient_unique_email.sql` | Unique constraint patients(clinic_id, lower(email)) | Sec | [x] |
+| 0021 | `0021_room_exclusion.sql` | GiST exclusion constraint (room double-booking) | Sec | [x] *(fixed: immutable expr)* |
+| 0022 | `0022_on_delete_policies.sql` | ON DELETE cascade/set null on FKs | Sec | [x] *(fixed: ADD CONSTRAINT syntax)* |
+| 0023 | `0023_package_expiry_guard.sql` | Blocks deduction on expired packages (RPC) | Sec | [x] |
+| 0024 | `0024_money_cents.sql` | Converts amount columns from NUMERIC dollars to INTEGER cents (idempotent) | Data | [x] |
+| 0025 | `0025_seed_is_synthetic.sql` | `is_synthetic` column on 6 tables for seed cleanup | Data | [x] |
+| 0026 | `0026_dashboard_metrics_rpc.sql` | `get_dashboard_metrics()` SQL function | Data | [x] |
+| 0027 | `0027_performance_indexes.sql` | Composite indexes (appointments, payments, patients, marketplace) | Data | [x] |
 
 ---
 
@@ -1166,7 +1221,7 @@ Record these BEFORE the clinic starts using the portal for real patients:
 
 ### 10.6 Connect API Deployment Target
 
-- **Resolution:** **Vercel (Next.js)** is canonical. Disregard Render/Express approach in older docs.
+- **Resolution:** **Railway (Next.js)** is canonical. Disregard Render/Express approach in older docs.
 
 ### 10.7 Postmark Env Var Name
 
@@ -1219,6 +1274,15 @@ Record these BEFORE the clinic starts using the portal for real patients:
 - When writing manual SQL queries against these columns, remember to multiply/divide by 100.
 - The application code handles this automatically: `PaymentPanel` converts input to cents, `DashboardOverview` divides by 100 for display, `reporting/index.ts` sums raw cents.
 - The migration is **idempotent** — it guards with a column type check so re-running won't double-multiply.
+
+### 10.11 Migration Fixes Applied During Initial Deploy
+
+- **Resolution:** 5 migration files had bugs that prevented them from running on a fresh Supabase project. All were fixed in-place and applied successfully via `supabase db push`:
+  - **0004** — GiST exclusion constraint used `(duration_minutes || ' minutes')::INTERVAL` (text→interval cast is not IMMUTABLE). Fixed to `duration_minutes * INTERVAL '1 minute'`.
+  - **0006** — `ALTER TABLE ... RENAME COLUMN treatment_type` failed because 0004 already creates the column as `service_type`. Wrapped in `DO $$ ... IF EXISTS ... $$` guard.
+  - **0012** — Three issues: (a) `clinics.owner_id` FK to `auth.users` failed for synthetic UUIDs → added synthetic `auth.users` inserts; (b) synthetic UUIDs contained invalid hex chars (`p`, `k`) → replaced with valid hex (`d1`-`d5`, `e1`); (c) referenced `payments` table before migration 0017 creates it → wrapped in conditional `DO $$ IF EXISTS ... $$`; (d) `audit_logs.resource_id` is UUID but received string `'login'` → changed to `NULL`; (e) `audit_logs.user_id` FK → changed to valid synthetic owner UUID.
+  - **0021** — Same IMMUTABLE issue as 0004. Same fix applied.
+  - **0022** — `ADD CONSTRAINT IF NOT EXISTS` is not valid PostgreSQL syntax → wrapped in `DO $$ IF NOT EXISTS ... $$` block.
 
 ---
 

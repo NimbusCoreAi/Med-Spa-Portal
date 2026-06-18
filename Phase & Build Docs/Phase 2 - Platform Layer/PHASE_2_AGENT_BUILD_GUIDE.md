@@ -393,7 +393,7 @@ pnpm dev
 | Email | Postmark |
 | SMS | Twilio |
 | Auth | Supabase Auth + @supabase/ssr |
-| Hosting | Vercel |
+| Hosting | Railway |
 
 ## Architecture
 
@@ -1586,23 +1586,23 @@ git add -A && git commit -m "feat: portal calls Connect API for SMS instead of d
 
 ---
 
-### Step 12: Deploy Connect API to Vercel
+### Step 12: Deploy Connect API to Railway
 
 > 🔧 **MANUAL TASK** — See `MASTER_MANUAL_CONFIG.md` Section 3B (Step 3B Connect API Deployment)
 >
 > **Skills:** No code skills needed — this is a human deployment task. After deploy, run `testing-plan` (`Skills/Agent Core Systems/plugins/agentsystem-core/skills/testing-plan/SKILL.md`) to generate a post-deploy smoke test plan for the human to execute against the deployed Connect API.
 >
-> **Subagent:** Delegate the deployment guide review to `devops-engineer` (`Skills/Claude Code Subagents/categories/03-infrastructure/devops-engineer.md`) — have it verify the Vercel config (root directory, env vars, build command) matches the monorepo structure.
+> **Subagent:** Delegate the deployment guide review to `devops-engineer` (`Skills/Claude Code Subagents/categories/03-infrastructure/devops-engineer.md`) — have it verify the Railway config (root directory, env vars, build command) matches the monorepo structure.
 >
 > Steps for the human:
 > 1. Push code to GitHub
-> 2. Vercel → New Project → Import repo
+> 2. Railway → New Project → Deploy from GitHub repo
 > 3. Set Root Directory to `Med Spa App/apps/connect-api`
 > 4. Add env vars: `CONNECT_API_KEY`, `SUPABASE_URL`, `SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN`, `TWILIO_PHONE_NUMBER`
 > 5. Deploy
-> 6. Test health: `curl https://connect-api-xxx.vercel.app/api/health`
-> 7. Test with API key: `curl -X POST https://connect-api-xxx.vercel.app/api/v1/reporting/treatment-metrics -H "x-api-key: YOUR_KEY" -H "Content-Type: application/json" -d '{"clinic_id":"uuid"}'`
-> 8. Update portal's `CONNECT_API_URL` in Vercel env vars to production Connect API URL
+> 6. Test health: `curl https://connect-api-xxx.up.railway.app/api/health`
+> 7. Test with API key: `curl -X POST https://connect-api-xxx.up.railway.app/api/v1/reporting/treatment-metrics -H "x-api-key: YOUR_KEY" -H "Content-Type: application/json" -d '{"clinic_id":"uuid"}'`
+> 8. Update portal's `CONNECT_API_URL` in Railway service variables to production Connect API URL
 
 ---
 
@@ -1616,7 +1616,7 @@ git add -A && git commit -m "feat: portal calls Connect API for SMS instead of d
 - [ ] Package deduct endpoint works (migration 0009 run)
 - [ ] Treatment metrics endpoint works
 - [ ] Portal routes SMS through Connect API (end-to-end)
-- [ ] Connect API deployed to Vercel
+- [ ] Connect API deployed to Railway
 - [ ] All tests pass
 
 ---
@@ -1737,7 +1737,7 @@ info:
   description: Unified API for B2B integrations (SMS, billing, reporting).
 
 servers:
-  - url: https://connect-api-xxx.vercel.app
+  - url: https://connect-api-xxx.up.railway.app
     description: Production
   - url: http://localhost:3001
     description: Local dev
@@ -1912,7 +1912,7 @@ paths:
 2. Make your first call:
 
 ```bash
-curl -X POST https://connect-api-xxx.vercel.app/api/v1/reporting/treatment-metrics \
+curl -X POST https://connect-api-xxx.up.railway.app/api/v1/reporting/treatment-metrics \
   -H "x-api-key: YOUR_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{"clinic_id":"your-clinic-uuid","group_by":"service_type"}'
@@ -2005,7 +2005,7 @@ curl -X POST .../api/v1/reporting/treatment-metrics \
 ### JavaScript
 
 ```javascript
-const response = await fetch('https://connect-api-xxx.vercel.app/api/v1/communications/sms-reminder', {
+const response = await fetch('https://connect-api-xxx.up.railway.app/api/v1/communications/sms-reminder', {
   method: 'POST',
   headers: {
     'x-api-key': process.env.CONNECT_API_KEY,
@@ -2027,7 +2027,7 @@ const data = await response.json();
 import requests
 
 response = requests.post(
-    'https://connect-api-xxx.vercel.app/api/v1/communications/sms-reminder',
+    'https://connect-api-xxx.up.railway.app/api/v1/communications/sms-reminder',
     headers={
         'x-api-key': os.environ['CONNECT_API_KEY'],
         'Content-Type': 'application/json',
@@ -2159,7 +2159,7 @@ git add -A && git commit -m "feat: pricing structure prep — usage logging + mi
 > ```bash
 > ab -n 100 -c 10 -H "x-api-key: YOUR_KEY" \
 >    -p body.json -T application/json \
->    https://connect-api-xxx.vercel.app/api/v1/communications/sms-reminder
+>    https://connect-api-xxx.up.railway.app/api/v1/communications/sms-reminder
 > ```
 
 ---

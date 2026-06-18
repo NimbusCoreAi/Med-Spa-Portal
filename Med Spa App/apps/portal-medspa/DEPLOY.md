@@ -2,7 +2,7 @@
 
 ## Prerequisites
 
-- Vercel account
+- Railway account
 - Supabase project (production)
 - Stripe account
 - Postmark account
@@ -25,22 +25,24 @@
 3. Enable daily backups: Settings > Database > Daily Backups
 4. Note the project URL and anon key from Settings > API
 
-## 2. Vercel Deployment
+## 2. Railway Deployment
 
 1. Push the repo to GitHub
-2. Go to [vercel.com](https://vercel.com) > New Project > Import the repo
-3. Set Root Directory to `Med Spa App/apps/portal-medspa`
-4. Framework Preset: Next.js (auto-detected)
-5. Add all environment variables (see below)
+2. Go to [railway.com](https://railway.com) → New Project → Deploy from GitHub repo
+3. Set Root Directory to `Med Spa App/apps/portal-medspa` (so the pnpm workspace resolves)
+4. Buildpack: Railway auto-detects Next.js via Nixpacks (no config file required)
+5. Add all environment variables under Service → Variables (see below)
 6. Deploy
+
+> **HIPAA note:** Railway does **not** offer a HIPAA BAA. This deployment path is fine for dev/staging and early production with **no real PHI**. Before storing real patient data, migrate the app host to a BAA-signed provider (AWS/GCP/Azure).
 
 ## 3. Environment Variables
 
-Set these in Vercel > Settings > Environment Variables:
+Set these in Railway → Service → Variables:
 
 | Variable | Where to get it |
 |----------|----------------|
-| `NEXT_PUBLIC_APP_URL` | Your Vercel domain (e.g. `https://your-app.vercel.app`) |
+| `NEXT_PUBLIC_APP_URL` | Your Railway domain (e.g. `https://your-app.up.railway.app`) |
 | `NEXT_PUBLIC_SUPABASE_URL` | Supabase > Settings > API > Project URL |
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase > Settings > API > anon key |
 | `SUPABASE_URL` | Same as NEXT_PUBLIC_SUPABASE_URL |
@@ -57,13 +59,13 @@ Set these in Vercel > Settings > Environment Variables:
 ## 4. Stripe Webhook
 
 1. In Stripe Dashboard, create a webhook endpoint:
-   - URL: `https://your-app.vercel.app/api/webhooks/stripe`
+   - URL: `https://your-app.up.railway.app/api/webhooks/stripe`
    - Events: `checkout.session.completed`, `payment_intent.payment_failed`
-2. Copy the signing secret and set `STRIPE_WEBHOOK_SECRET` in Vercel
+2. Copy the signing secret and set `STRIPE_WEBHOOK_SECRET` in Railway service variables
 
 ## 5. Post-Deploy Verification
 
-- [ ] App loads at Vercel URL
+- [ ] App loads at Railway URL
 - [ ] Signup flow creates a clinic
 - [ ] Login redirects to dashboard
 - [ ] Dashboard shows metrics (may be zeros with no data)
@@ -75,7 +77,7 @@ Set these in Vercel > Settings > Environment Variables:
 
 ## 6. SSL
 
-Automatic via Vercel. No additional configuration needed.
+Automatic via Railway. No additional configuration needed.
 
 ## 7. Supabase Backups
 

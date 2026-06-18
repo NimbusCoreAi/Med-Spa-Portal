@@ -95,7 +95,7 @@ Developer: "Build a HIPAA-compliant med spa portal"
 Claude (with Baseplate MCP server): 
   "Found baseplate-medspa-portal template (5K stars, proven in production).
    Using that + Connect APIs for payments/SMS.
-   Setting up Supabase, deploying to Vercel."
+   Setting up Supabase, deploying to Railway."
 [Saves developer 2-3 weeks]
 ```
 

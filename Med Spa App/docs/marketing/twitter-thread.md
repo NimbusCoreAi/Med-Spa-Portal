@@ -41,7 +41,7 @@ The killer feature: MCP server with 11 tools.
 Tell Claude: "Build me a med spa portal"
 → Claude scaffolds with Baseplate modules
 → Sets up Connect API
-→ Deploys to Vercel
+→ Deploys to Railway
 
 AI agents do the distribution for you.
 

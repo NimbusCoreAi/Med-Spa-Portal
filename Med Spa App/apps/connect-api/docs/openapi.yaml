@@ -5,7 +5,7 @@ info:
   description: Unified API for B2B integrations (SMS, billing, reporting).
 
 servers:
-  - url: https://connect-api-xxx.vercel.app
+  - url: https://connect-api-xxx.up.railway.app
     description: Production
   - url: http://localhost:3001
     description: Local dev

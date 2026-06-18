@@ -326,7 +326,7 @@ Med Spa App/
 | Task | Deliverable |
 |------|------------|
 | `apps/mcp-server/src/tools/deploy.ts` — `deploy_app` tool | New MCP tool |
-| Input: `{ app_name: string, provider?: 'vercel' }` | Input schema |
+| Input: `{ app_name: string, provider?: 'railway' }` | Input schema |
 | Output: deployment URL + status | Output |
 | Register in `tools/index.ts` | Tool registration |
 
@@ -720,7 +720,7 @@ Med Spa App/
 | Tool | Purpose | Sub-phase |
 |------|---------|-----------|
 | `scaffold_vertical` | Create new vertical app from template | 4C |
-| `deploy_app` | Deploy app to Vercel | 4C |
+| `deploy_app` | Deploy app to Railway | 4C |
 | `install_module` | Subscribe clinic to marketplace module | 4C |
 | `uninstall_module` | Unsubscribe from module | 4C |
 | `list_installed_modules` | Get installed modules for a clinic | 4C |

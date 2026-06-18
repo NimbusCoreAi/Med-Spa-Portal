@@ -27,7 +27,7 @@ pnpm dev
 | SMS | Twilio |
 | Auth | Supabase Auth + @supabase/ssr |
 | AI Agent Integration | MCP Server (11 tools, JSON-RPC over stdio) |
-| Hosting | Vercel |
+| Hosting | Railway |
 
 ## Architecture
 

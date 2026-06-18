@@ -168,7 +168,7 @@ Time:           ~18s total
 | 1D.3 | Payments | ✅ | Stripe integration, payment links, webhook handling, payment status tracking |
 | 1D.4 | Notifications | ✅ | Postmark (email), Twilio (SMS), transactional templates |
 | 1D.5 | Reporting | ✅ | Revenue, appointments, no-show rate, intake completion, provider/treatment analytics |
-| 1D.6 | Deployment | ✅ | Vercel config, CI/CD, .env.local.example, deployment guide |
+| 1D.6 | Deployment | ✅ | Railway config, CI/CD, .env.local.example, deployment guide |
 | 1D.7 | Module Gaps + Staging Deploy | 🔄 | Awaiting: module extractions, RBAC hardening, HIPAA, staging smoke test |
 
 ---
@@ -303,7 +303,7 @@ The Phase 1 audit identified 7 code gaps. All have been addressed:
 ### Low Priority (Consider for Phase 1 Completion)
 1. **Dashboard placeholders** — `/dashboard` and some child pages show placeholder text. Will be enhanced during Phase 1 module gap closure.
 2. **Client-side data fetching** — Components currently use Supabase client directly. Phase 1 should migrate to `@supabase/ssr` for session-aware client-side queries.
-3. **Stripe checkout redirects** — Success/cancel URLs use env vars. Ensure `NEXT_PUBLIC_APP_URL` is set in production Vercel config.
+3. **Stripe checkout redirects** — Success/cancel URLs use env vars. Ensure `NEXT_PUBLIC_APP_URL` is set in production Railway config.
 4. **Admin-only pages missing RBAC** — Audit logs page has middleware + component checks, but some dashboard pages need role verification. Add in Phase 1.
 
 ### Not Required (All Phase 1 Requirements Met)
@@ -343,7 +343,7 @@ The Phase 1 audit identified 7 code gaps. All have been addressed:
 - [x] Payments integrated (Stripe with webhooks)
 - [x] Notifications infrastructure ready (Postmark + Twilio)
 - [x] Reporting dashboard designed (revenue, metrics, analytics)
-- [x] Deployment config prepared (Vercel, CI/CD, env vars)
+- [x] Deployment config prepared (Railway, CI/CD, env vars)
 - [x] RLS gaps fixed (service-role API routes)
 - [x] Test coverage gaps fixed (UI 100%, Patterns 92.7%, Core 98.6%)
 - [x] Documentation updated (CLAUDE.md, .env.local.example, audit section)
@@ -385,7 +385,7 @@ The Phase 1 audit identified 7 code gaps. All have been addressed:
 1. **Close module library gaps** — Extract errors, bookings, availability, hooks, next-api packages
 2. **Fix RBAC** — Add role checks to all dashboard pages, not just audit logs
 3. **Resolve HIPAA** — BAA with Supabase or restrict intake fields
-4. **Deploy to staging** — Vercel staging + all env vars configured
+4. **Deploy to staging** — Railway staging + all env vars configured
 5. **Pass smoke test** — Full happy path verified in staging
 
 ### After Phase 1 (Phases 2-4 Build)

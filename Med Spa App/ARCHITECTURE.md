@@ -168,5 +168,5 @@ User → Portal (Next.js) → Connect API → Supabase (PostgreSQL)
 | SMS | Twilio |
 | Auth | Supabase Auth + @supabase/ssr |
 | AI Agent | MCP Server (JSON-RPC over stdio) |
-| Hosting | Vercel |
+| Hosting | Railway |
 | Monorepo | pnpm + Turborepo |

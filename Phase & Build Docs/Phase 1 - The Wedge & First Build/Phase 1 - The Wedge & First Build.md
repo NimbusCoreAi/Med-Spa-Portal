@@ -141,7 +141,7 @@ No incumbent owns "HIPAA-compliant + integrated clinical + booking + payments + 
 - Resolve HIPAA compliance posture (BAA or restrict intake fields)
 
 **Staging Deploy + Smoke Test:**
-- Deploy to Vercel staging + Supabase
+- Deploy to Railway staging + Supabase
 - Pass full happy path smoke test (signup → providers → booking → intake → payment → notifications)
 - Verify all integrations work end-to-end
 
@@ -153,7 +153,7 @@ No incumbent owns "HIPAA-compliant + integrated clinical + booking + payments + 
 - [ ] Multi-tenant isolation (extract clinicId from session, remove NEXT_PUBLIC_CLINIC_ID)
 - [ ] HIPAA compliance posture resolved (BAA with Supabase OR restrict intake fields)
 - [ ] Session-aware client (@supabase/ssr)
-- [ ] Staging deployment (Vercel + Supabase)
+- [ ] Staging deployment (Railway + Supabase)
 - [ ] Post-deploy smoke test passed (full happy path verified)
 
 ### Phase 1 → Phase 2 Gate Criteria (Build-Focused)
@@ -179,14 +179,14 @@ No incumbent owns "HIPAA-compliant + integrated clinical + booking + payments + 
 - **Payments:** Stripe (not Square; better for Phase 2+ multi-provider model)
 - **Email:** Postmark (transactional, high deliverability)
 - **SMS:** Twilio (healthcare-grade)
-- **Hosting:** Vercel (frontend), Supabase (backend + database)
+- **Hosting:** Railway (frontend), Supabase (backend + database)
 - **Auth:** Supabase Auth (simplicity + HIPAA compliance)
 
 ### Monorepo Structure (Day 1)
 ```
 Med Spa App/
   apps/
-    portal-medspa/        # Med spa portal (deployed to Vercel)
+    portal-medspa/        # Med spa portal (deployed to Railway)
     connect-api/          # Empty for now; becomes standalone service in Phase 2
   packages/
     core/                 # baseplate-core: Auth, RBAC, Audit Logs, Types
@@ -205,7 +205,7 @@ Med Spa App/
 
 **What we own:**
 - Data encryption at rest (Postgres + application-level)
-- Encryption in transit (HTTPS/TLS via Vercel + Supabase)
+- Encryption in transit (HTTPS/TLS via Railway + Supabase)
 - Audit logs (WHO, WHAT, WHEN)
 - Role-based access control
 - Digital consent (signed, timestamped)

@@ -46,7 +46,7 @@ Database:   Postgres via Supabase
 Payments:   Stripe
 Email:      Postmark
 SMS:        Twilio
-Deploy:     Vercel + Supabase
+Deploy:     Railway + Supabase
 Auth:       Supabase Auth
 ```
 

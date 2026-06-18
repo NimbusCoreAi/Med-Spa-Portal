@@ -80,7 +80,7 @@ Build a HIPAA-compliant med spa portal that solves 5 critical clinic owner pain 
   ```
   Med Spa App/
     apps/
-      portal-medspa/        # Main Scaffold template (Vercel)
+      portal-medspa/        # Main Scaffold template (Railway)
       connect-api/          # (Empty for now; Phase 2)
     packages/
       core/                 # baseplate-core: shared modules
@@ -90,7 +90,7 @@ Build a HIPAA-compliant med spa portal that solves 5 critical clinic owner pain 
     package.json
   ```
 - Set up Supabase project (Auth, DB, Realtime)
-- Set up Vercel for deployment
+- Set up Railway for deployment
 - Initialize git + GitHub (private repo)
 
 **Modules in `packages/core` (Start):**
@@ -508,7 +508,7 @@ CREATE TABLE payments (
 - [ ] Complete HIPAA baseline: encryption at rest, audit logging, RBAC enforcement on all endpoints
 - [ ] Security review (OWASP top 10, HIPAA checklist)
 - [ ] Performance optimization (slow queries, large lists)
-- [ ] Deploy to staging environment (Vercel + Supabase staging)
+- [ ] Deploy to staging environment (Railway + Supabase staging)
 - [ ] Smoke test all core flows on staging (auth → intake → scheduling → payment)
 - [ ] Document all modules (README + JSDoc on exports)
 
@@ -564,7 +564,7 @@ CREATE TABLE payments (
 - PHI data handling (no photos in intake; stored separately)
 
 **What We Don't Own Yet (Phase 2+):**
-- Vendor BAA (Business Associate Agreement) with Supabase/Vercel
+- Vendor BAA (Business Associate Agreement) with Supabase (and a BAA-signed app host: AWS/GCP/Azure) — Railway/Vercel do not offer a BAA
 - Encryption key management (AWS KMS, etc.)
 - Disaster recovery + backup encryption
 - Penetration testing
@@ -581,13 +581,13 @@ CREATE TABLE payments (
 
 **Phase 1 Limits (Acceptable):**
 - Single Supabase instance (not high-availability)
-- Vercel free tier → Pro tier as needed
+- Railway Hobby (~$5/mo) → Pro tier as needed
 - No caching layer (Redis)
 - Direct database queries (no connection pooling)
 
 **Scaling for Phase 2 (if needed):**
 - Supabase replication + read replicas
-- Vercel Pro + auto-scaling
+- Railway Pro + auto-scaling
 - Redis for session + caching
 - PgBouncer for connection pooling
 - CDN for static assets
@@ -680,9 +680,9 @@ CREATE TABLE payments (
 - [ ] No N+1 queries (join instead of loop)
 
 **Deployment:**
-- [ ] Vercel deployment successful
+- [ ] Railway deployment successful
 - [ ] Supabase staging database initialized
-- [ ] Environment variables set in Vercel
+- [ ] Environment variables set in Railway
 - [ ] Stripe test keys → production keys (Phase 5 only — before go-live)
 - [ ] SSL certificate valid
 - [ ] DNS pointing correctly
@@ -851,7 +851,7 @@ If you see this in `apps/portal-medspa/`, MOVE IT TO `packages/`:
 **Recommended Tools for Development:**
 - Cursor (AI-assisted development)
 - Claude (code review, architecture discussion)
-- Vercel (frontend deployment)
+- Railway (frontend deployment)
 - Supabase (backend + database)
 - Stripe Dashboard (payment testing)
 - Postmark + Twilio Console (email/SMS testing)

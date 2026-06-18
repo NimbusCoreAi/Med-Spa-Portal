@@ -181,7 +181,7 @@ pnpm dev
 
 [ASCII diagram showing:
   apps/portal-medspa (Next.js 14)
-  apps/connect-api (Next.js 14, separate Vercel project)
+  apps/connect-api (Next.js 14, separate Railway service)
   packages/core (16 modules)
   packages/ui (6 components)
   packages/patterns (6 patterns)
@@ -200,7 +200,7 @@ pnpm dev
 | Email | Postmark |
 | SMS | Twilio |
 | Auth | Supabase Auth + @supabase/ssr |
-| Hosting | Vercel |
+| Hosting | Railway |
 
 ## Module Library
 
@@ -787,12 +787,12 @@ const treatmentMetricsSchema = z.object({
 
 ---
 
-### Step 12: Deploy Connect API to Vercel
+### Step 12: Deploy Connect API to Railway
 
-> Deploy as a separate Vercel project.
+> Deploy as a separate Railway service.
 
 1. Push code to GitHub
-2. Go to Vercel → New Project → Import repo
+2. Go to Railway → New Project → Deploy from GitHub repo
 3. Set Root Directory to: `Med Spa App/apps/connect-api`
 4. Add environment variables:
    - `CONNECT_API_KEY` — generate a strong random string
@@ -803,21 +803,21 @@ const treatmentMetricsSchema = z.object({
    - `TWILIO_AUTH_TOKEN` — same as portal
    - `TWILIO_PHONE_NUMBER` — same as portal
 5. Deploy
-6. Test: `curl https://connect-api-xxx.vercel.app/api/health`
+6. Test: `curl https://connect-api-xxx.up.railway.app/api/health`
 7. Test with API key:
    ```bash
-   curl -X POST https://connect-api-xxx.vercel.app/api/v1/reporting/treatment-metrics \
+   curl -X POST https://connect-api-xxx.up.railway.app/api/v1/reporting/treatment-metrics \
      -H "x-api-key: YOUR_KEY" \
      -H "Content-Type: application/json" \
      -d '{"clinic_id":"uuid"}'
    ```
-8. Update portal's `CONNECT_API_URL` in Vercel env vars
+8. Update portal's `CONNECT_API_URL` in Railway service variables
 
-- [ ] Deploy Connect API to Vercel
+- [ ] Deploy Connect API to Railway
 - [ ] Health check passes
 - [ ] All 3 endpoints work with API key
 - [ ] Portal updated to call production Connect API URL
-- [ ] Commit: `"chore: deploy Connect API to Vercel + wire portal"`
+- [ ] Commit: `"chore: deploy Connect API to Railway + wire portal"`
 
 ---
 
@@ -979,7 +979,7 @@ Write developer integration guide:
 # Using ab (Apache Bench) or a simple Node script
 ab -n 100 -c 10 -H "x-api-key: YOUR_KEY" \
    -p body.json -T application/json \
-   https://connect-api-xxx.vercel.app/api/v1/communications/sms-reminder
+   https://connect-api-xxx.up.railway.app/api/v1/communications/sms-reminder
 ```
 
 - [ ] Load test all 3 endpoints (100 requests each)
@@ -1184,7 +1184,7 @@ Connect API (apps/connect-api)
 ### Key Design Principles
 
 1. **Framework-agnostic business logic** — All domain logic lives in `@baseplate/core`. Connect API is a thin HTTP layer.
-2. **One hosting provider** — Both portal and Connect API on Vercel. Can migrate Connect to Render/Fly.io later if needed.
+2. **One hosting provider** — Both portal and Connect API on Railway. Can migrate Connect to Render/Fly.io later if needed.
 3. **Service-role for API access** — Connect API uses `getServiceSupabaseClient()` (bypasses RLS) since it authenticates via API key, not user session.
 4. **Migration path to Express** — If Phase 3+ needs always-warm servers, each Next.js route handler body becomes an Express callback. The `@baseplate/core` calls are identical.
 5. **Rate limiting via Upstash** — Free tier covers current scale. No additional infrastructure.

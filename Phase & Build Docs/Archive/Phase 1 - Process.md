@@ -453,14 +453,14 @@ export default function Dashboard() {
 
 ### Step 5: Deploy (End of Week 4, 1-2 hours)
 
-- [ ] Deploy to Vercel:
-  - `npm i -g vercel` (if not installed)
-  - Link repo: `vercel link`
-  - Deploy: `vercel`
+- [ ] Deploy to Railway:
+  - `npm i -g @railway/cli` (if not installed)
+  - Link repo: `railway login`
+  - Deploy: `railway up`
 - [ ] Create a `.env.local` for local dev with mock data
 - [ ] Test the deployment is live
 - [ ] Document the deployment URL: _______________
-- [ ] Commit: `git commit -m "chore: deploy to Vercel"`
+- [ ] Commit: `git commit -m "chore: deploy to Railway"`
 
 ---
 
@@ -687,7 +687,7 @@ Extract reusable patterns identified during codebase review:
 - [ ] Set up Supabase, Stripe, Postmark, Twilio staging accounts
 - [ ] Run all 8 migrations on staging Supabase
 - [ ] Configure all env vars in staging
-- [ ] Deploy to Vercel staging
+- [ ] Deploy to Railway staging
 - [ ] Pass post-deploy smoke test:
   - [ ] Owner signup creates clinic + staff record
   - [ ] Login works, session persists
@@ -719,7 +719,7 @@ Extract reusable patterns identified during codebase review:
 
 By end of Phase 1:
 
-- ✅ Working portal deployed to Vercel staging
+- ✅ Working portal deployed to Railway staging
 - ✅ Supabase DB with user, entity, and payment data
 - ✅ Stripe invoicing and webhooks
 - ✅ Postmark email notifications

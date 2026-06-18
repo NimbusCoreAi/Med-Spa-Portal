@@ -15,7 +15,7 @@
 |-------|------|--------|---------|
 | Phase 0 | Vertical Validation | ✅ Complete | 12 pain points validated; 3 pilot leads identified |
 | Phase 1 | Complete Med Spa Portal | 🟡 ~95% done | All code complete: 1A-1D.6, audit, arch fixes, 10 modules extracted, HIPAA doc. Remaining: staging deploy + smoke test |
-| Phase 2 | Platform Layer Build | ✅ Code complete + polished | Connect API (3 endpoints), rate limiting, OpenAPI docs, usage logging, cross-vertical validation. Quality polish: atomic deduction RPC, RLS fix, typed errors, expanded test coverage (225 tests), OpenAPI gap fix. Remaining: manual deploy (Vercel, Upstash, Stripe products) |
+| Phase 2 | Platform Layer Build | ✅ Code complete + polished | Connect API (3 endpoints), rate limiting, OpenAPI docs, usage logging, cross-vertical validation. Quality polish: atomic deduction RPC, RLS fix, typed errors, expanded test coverage (225 tests), OpenAPI gap fix. Remaining: manual deploy (Railway, Upstash, Stripe products) |
 | Phase 3 | Intelligence & Ecosystem Build | ✅ Code complete | Rules engine (6 rules), Connect API intelligence endpoint, risk panel in portal, home services portal (13 routes), configurable RBAC factory, marketplace framework, MCP server (5 tools), ML scaffolding. 250 tests, 16 packages. Remaining: manual deploy |
 | Phase 4 | Open-Source Launch | ✅ Code complete + gap fixes applied | Repo prep (LICENSE, CONTRIBUTING, CHANGELOG, ARCHITECTURE, CI/CD), marketplace UI + dev docs, MCP server (11 tools, modularized), @baseplate/sdk (restructured), Python ML pipeline, churn-prediction endpoint, marketing materials. CI enhanced with Python validation + turbo cache. 17 packages, 250 tests. Remaining: GitHub launch (create public repo, push, marketing rollout) |
 | Phase 5 | Customer Onboarding | ✅ Code complete | Code gaps built: pricing/billing (subscription checkout, portal, webhook), observability (monitoring module, health endpoint, error boundaries), self-service signup, feedback widget + API. Security audited + fixed (IDOR holes patched, session auth enforced, email verification required). 262 tests, 17 packages, 35 portal routes. Remaining: ALL manual work (deploy, HIPAA, recruit pilots, onboard, ML training, revenue). |
@@ -28,7 +28,7 @@
 |------|----------|
 | **Phase 0 → 1** | ✅ Met — pain points validated, pilot leads identified |
 | **Phase 1 → 2** | All features built + tested + module gaps closed + RBAC complete on all routes + HIPAA resolved + staging smoke test passes |
-| **Phase 2 → 3** | ✅ Code complete — Connect API built (3 endpoints, rate limiting, OpenAPI, usage logging), modules generalized (type aliases + RBAC keys), cross-vertical validated. Remaining: manual deploy (Vercel, Upstash, Stripe products, load test) |
+| **Phase 2 → 3** | ✅ Code complete — Connect API built (3 endpoints, rate limiting, OpenAPI, usage logging), modules generalized (type aliases + RBAC keys), cross-vertical validated. Remaining: manual deploy (Railway, Upstash, Stripe products, load test) |
 | **Phase 3 → 4** | Rules engine + marketplace framework + MCP server + ML scaffolding + home services portal all built and tested |
 | **Phase 4 → 5** | ✅ Code + gap fixes complete — Repo prepped (LICENSE, CONTRIBUTING, CHANGELOG, ARCHITECTURE, CI/CD), docs complete, MCP server (11 tools, modularized), SDK restructured, ML pipeline built. Remaining: push to public GitHub repo + marketing rollout |
 | **Phase 5 → Beyond** | 3+ pilots onboarded, 2+ using weekly, $500+ MRR, ML models trained on real data |
@@ -56,7 +56,7 @@
 - Core modules: clinics, intake, patients, scheduling, reporting
 
 ### ✅ 1D.6 — Deployment Config (commit `4be176e`)
-- Vercel deployment config
+- Railway deployment config
 - CI/CD pipeline
 - Deploy guide
 
@@ -119,7 +119,7 @@ All 9 architecture gaps resolved:
 - [ ] Set up Supabase, Stripe, Postmark, Twilio accounts
 - [ ] Run all 8 migrations on staging Supabase
 - [ ] Configure all env vars in staging
-- [ ] Deploy to Vercel staging
+- [ ] Deploy to Railway staging
 - [ ] Pass post-deploy smoke test (full happy path)
 
 ### Phase 1 → Phase 2 Gate
@@ -234,7 +234,7 @@ postmark, stripe, twilio
 - Cross-vertical config guide (`docs/CROSS_VERTICAL_GUIDE.md`)
 
 ### Phase 2 Remaining (manual only — no code changes needed)
-- [ ] Deploy Connect API to Vercel (see `MASTER_MANUAL_CONFIG.md` Section 3B)
+- [ ] Deploy Connect API to Railway (see `MASTER_MANUAL_CONFIG.md` Section 3B)
 - [ ] Create Upstash Redis database (see `MASTER_MANUAL_CONFIG.md` Section 3C)
 - [ ] Create Stripe pricing products (see `MASTER_MANUAL_CONFIG.md` Section 3C)
 - [ ] Load test all 3 endpoints
@@ -364,7 +364,7 @@ postmark, stripe, twilio
 1. **`Phase & Build Docs/Phase 2 - Platform Layer/PHASE_2_EXECUTION_PLAN.md`** — The definitive build guide: generalization, Connect API, hardening, cross-vertical validation
 
 ### "I want to complete Phase 1 (staging deploy)"
-1. **`PHASE_1_COMPLETION_GUIDE.md`** — The definitive guide: service setup, local verification, Vercel deploy, 19-step smoke test, troubleshooting
+1. **`PHASE_1_COMPLETION_GUIDE.md`** — The definitive guide: service setup, local verification, Railway deploy, 19-step smoke test, troubleshooting
 2. `PHASE_1_STAGING_DEPLOY.md` — Legacy reference (same content, older format)
 
 ### "I want to understand Phase 1 (Building the Portal)"

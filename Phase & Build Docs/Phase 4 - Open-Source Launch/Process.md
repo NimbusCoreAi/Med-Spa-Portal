@@ -393,7 +393,7 @@ mcp-server/
     tools/
       scaffold.ts     # Create new scaffold template
       connect.ts      # Call Connect API
-      deploy.ts       # Deploy to Vercel
+      deploy.ts       # Deploy to Railway
   package.json
 ```
 
@@ -448,7 +448,7 @@ const server = {
     },
     {
       name: 'deploy',
-      description: 'Deploy a Scaffold app to Vercel',
+      description: 'Deploy a Scaffold app to Railway',
       input_schema: {
         type: 'object',
         properties: {
@@ -471,7 +471,7 @@ export async function handleToolCall(toolName: string, input: any) {
     case 'connect':
       return callConnectAPI(input.endpoint, input.method, input.body);
     case 'deploy':
-      return deployToVercel(input.app_name);
+      return deployToRailway(input.app_name);
     default:
       return { error: 'Unknown tool' };
   }
@@ -514,12 +514,12 @@ async function callConnectAPI(
   return response.json();
 }
 
-async function deployToVercel(appName: string) {
-  // Call Vercel API to deploy
+async function deployToRailway(appName: string) {
+  // Call Railway API to deploy
   return {
     success: true,
-    url: `https://${appName}.vercel.app`,
-    message: 'Deployed to Vercel. Check https://vercel.com/dashboard',
+    url: `https://${appName}.up.railway.app`,
+    message: 'Deployed to Railway. Check https://railway.com/dashboard',
   };
 }
 

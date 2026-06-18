@@ -78,10 +78,10 @@ No `NEXT_PUBLIC_CLINIC_ID` needed — clinicId is extracted from the session aut
 - Staging deploy + smoke test (follow `../PHASE_1_COMPLETION_GUIDE.md`)
 
 ### Phase 2 Remaining (manual only)
-- Deploy Connect API to Vercel, set up Upstash Redis, create Stripe products, load test
+- Deploy Connect API to Railway, set up Upstash Redis, create Stripe products, load test
 
 ### Phase 3 Remaining (manual only)
-- Deploy home services portal + MCP server to Vercel
+- Deploy home services portal + MCP server to Railway
 - Run migrations 0012 + 0013 on staging Supabase
 
 ### Phase 4 Remaining (manual only)

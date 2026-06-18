@@ -31,7 +31,7 @@
 | Area | Status |
 |------|--------|
 | Code (Phases 1-4) | ✅ Complete — 250 tests, 17 packages, all builds pass |
-| Staging deploy | ⬜ Never done — no Supabase project, no Vercel deploy |
+| Staging deploy | ⬜ Never done — no Supabase project, no Railway deploy |
 | Connect API deploy | ⬜ Never deployed |
 | GitHub public repo | ⬜ Not pushed (Phase 4 gap fixes done, repo not public) |
 | Pricing/billing code | ⬜ Missing — no pricing page, no subscription billing |
@@ -61,14 +61,14 @@
 | 2 | Create Stripe account (Test Mode) | Manual | — | `payment-integration` | ⬜ |
 | 3 | Create Postmark account + Server | Manual | — | `devops-engineer` | ⬜ |
 | 4 | Create Twilio account + buy number | Manual | — | `devops-engineer` | ⬜ |
-| 5 | Create Vercel account | Manual | — | `devops-engineer` | ⬜ |
+| 5 | Create Railway account | Manual | — | `devops-engineer` | ⬜ |
 | 6 | Generate all API keys/credentials | Manual | — | `devops-engineer` | ⬜ |
 | 7 | Run migrations 0001-0013 on Supabase | Manual | `add-migration` | `postgres-pro` | ⬜ |
 | 8 | Configure Supabase Auth (disable email confirm) | Manual | — | `devops-engineer` | ⬜ |
 | 9 | Verify Postmark sender identity | Manual | — | `devops-engineer` | ⬜ |
 | 10 | Set up Stripe CLI webhook forwarding | Manual | — | `payment-integration` | ⬜ |
 | 11 | Fill `.env.local` with all 13 env vars | Manual | `sync-docs` | — | ⬜ |
-| 12 | Deploy portal-medspa to Vercel staging | Manual | `commit-and-push` | `devops-engineer` | ⬜ |
+| 12 | Deploy portal-medspa to Railway staging | Manual | `commit-and-push` | `devops-engineer` | ⬜ |
 | 13 | Update Stripe webhook → staging URL | Manual | — | `payment-integration` | ⬜ |
 | 14 | Update Supabase Auth URLs → staging domain | Manual | `sync-docs` | `devops-engineer` | ⬜ |
 | 15 | **Run 19-step staging smoke test** | Manual | `testing-plan` | `qa-expert` | ⬜ |
@@ -86,10 +86,10 @@
 | # | Task | Type | Skill | Subagent | Status |
 |---|------|------|-------|----------|--------|
 | 1 | Generate `CONNECT_API_KEY` | Manual | — | `devops-engineer` | ⬜ |
-| 2 | Deploy connect-api to Vercel | Manual | `commit-and-push` | `devops-engineer` | ⬜ |
-| 3 | Add Connect API env vars to Vercel | Manual | — | `devops-engineer` | ⬜ |
+| 2 | Deploy connect-api to Railway | Manual | `commit-and-push` | `devops-engineer` | ⬜ |
+| 3 | Add Connect API env vars to Railway | Manual | — | `devops-engineer` | ⬜ |
 | 4 | Create Upstash Redis database | Manual | — | `devops-engineer` | ⬜ |
-| 5 | Add Upstash credentials to Vercel env | Manual | — | `devops-engineer` | ⬜ |
+| 5 | Add Upstash credentials to Railway env | Manual | — | `devops-engineer` | ⬜ |
 | 6 | Create Stripe pricing products (prep only) | Manual | — | `payment-integration` | ⬜ |
 | 7 | Test health endpoint | Manual | `verification-before-completion` | `qa-expert` | ⬜ |
 | 8 | Test authenticated endpoints | Manual | `verification-before-completion` | `qa-expert` | ⬜ |
@@ -243,12 +243,12 @@
 
 | # | Service | Action | Cost | Skill | Subagent |
 |---|---------|--------|------|-------|----------|
-| 1 | Stripe | Switch to Live Mode, copy live keys to Vercel | Per-transaction | — | `payment-integration` |
+| 1 | Stripe | Switch to Live Mode, copy live keys to Railway | Per-transaction | — | `payment-integration` |
 | 2 | Supabase | Upgrade to Pro ($25/mo), re-enable email confirmation | $25/mo | — | `devops-engineer` |
 | 3 | Twilio | Upgrade from trial, add payment method | Per-usage | — | `devops-engineer` |
 | 4 | Postmark | Verify production domain (DKIM + Return-Path) | $15+/mo | — | `devops-engineer` |
-| 5 | Vercel | Update all env vars to production values, redeploy | Free → $20+/mo | `sync-docs` | `devops-engineer` |
-| 6 | DNS | Configure production domain → Vercel (A record/CNAME) | $10-15/yr domain | — | `devops-engineer` |
+| 5 | Railway | Update all env vars to production values, redeploy | ~$5+/mo | `sync-docs` | `devops-engineer` |
+| 6 | DNS | Configure production domain → Railway (A record/CNAME) | $10-15/yr domain | — | `devops-engineer` |
 
 ### 2B. Production Smoke Test (12 steps)
 
@@ -279,7 +279,7 @@
 | # | Task | Notes | Skill | Subagent |
 |---|------|-------|-------|----------|
 | 1 | Sign Supabase BAA | Requires Pro tier (Part 2A) | — | `hipaa-compliance` |
-| 2 | Sign Vercel DPA | May require Pro/Enterprise plan | — | `hipaa-compliance` |
+| 2 | ⚠️ Railway does NOT offer a HIPAA BAA — migrate app host to AWS/GCP/Azure (with BAA) before processing real PHI | Railway is fine for dev/staging/early-prod with no real PHI | — | `hipaa-compliance` |
 | 3 | Set `PHI_ENABLED=true` | Enables field-level encryption | `sync-docs` | — |
 | 4 | Set up AWS KMS for encryption key storage | Production key management | — | `security-auditor`, `devops-engineer` |
 | 5 | Generate encryption keys via `generateKey()` | TweetNaCl module | — | `security-auditor` |

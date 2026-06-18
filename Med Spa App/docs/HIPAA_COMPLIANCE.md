@@ -25,7 +25,7 @@ upgrading to BAA-backed status is a **configuration change**, not a code rewrite
 | Safeguard | Implementation | Location |
 |-----------|---------------|----------|
 | **Encryption at rest** | TweetNaCl secretbox module (`encryptData`/`decryptData`/`generateKey`) — ready to activate for PHI fields | `packages/core/src/encryption/` |
-| **Encryption in transit** | HTTPS/TLS via Vercel (automatic) | Infrastructure |
+| **Encryption in transit** | HTTPS/TLS via Railway (automatic) | Infrastructure |
 | **Audit logging** | WHO/WHAT/WHEN/FROM for all actions, immutable | `packages/core/src/audit-logs/` |
 | **Access control (RBAC)** | Owner/Staff/Patient role enforcement on every route + API | `packages/core/src/rbac/`, `middleware.ts` |
 | **Row Level Security** | PostgreSQL RLS on all tables (clinic-scoped policies) | `supabase/migrations/0002_rls_policies.sql`, `0007_tighten_rls_policies.sql` |
@@ -48,9 +48,10 @@ When ready to accept real patient data (Phase 5 pilot onboarding):
    - Available at: https://supabase.com/docs/guides/security/hipaa
 3. No database schema changes needed — RLS already in place
 
-### Step 2: Vercel BAA
-1. Sign Vercel **Data Processing Agreement (DPA)** or upgrade to Enterprise
-2. Verify all environment variables use production secrets
+### Step 2: App Host BAA
+1. ⚠️ **Railway does NOT offer a HIPAA BAA** (no tier does). Railway is fine for dev/staging and early production with **no real PHI**.
+2. Before processing real PHI, **migrate the portal + Connect API to a HIPAA-eligible host with a signed BAA** (AWS, GCP, or Azure). A DPA is GDPR, not HIPAA — it does not satisfy the BAA requirement.
+3. Verify all environment variables use production secrets
 
 ### Step 3: Activate Encryption for PHI
 1. Set `PHI_ENABLED=true` in environment variables
@@ -75,7 +76,7 @@ When ready to accept real patient data (Phase 5 pilot onboarding):
 | Item | Phase | Notes |
 |------|-------|-------|
 | Signed BAA with Supabase | Phase 5 | Required before real PHI |
-| Signed DPA with Vercel | Phase 5 | Required before real PHI |
+| BAA with HIPAA-eligible app host (AWS/GCP/Azure) | Phase 5 | Required before real PHI — Railway offers no BAA |
 | AWS KMS key management | Phase 5 | For production encryption keys |
 | Penetration testing | Phase 5+ | Before scaling beyond pilots |
 | HIPAA compliance certification | Phase 5+ | Formal audit |

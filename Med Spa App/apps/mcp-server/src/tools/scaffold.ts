@@ -22,7 +22,7 @@ export const scaffoldVertical: MCPTool = {
         `3. Configure RBAC with createRBAC() factory for ${vertical} roles`,
         `4. Wire to @baseplate/core (auth, audit, encryption, scheduling)`,
         `5. Connect to Connect API for SMS, billing, reporting, intelligence`,
-        `6. Deploy to Vercel`,
+        `6. Deploy to Railway`,
       ],
       setup_commands: `git clone baseplate && cd baseplate && mkdir apps/${app_name}`,
       documentation: 'See ARCHITECTURE.md and CROSS_VERTICAL_GUIDE.md',

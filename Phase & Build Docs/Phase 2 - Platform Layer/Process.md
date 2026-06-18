@@ -134,7 +134,7 @@ pnpm dev
 | Database | PostgreSQL (Supabase) |
 | Payments | Stripe |
 | Email | Postmark |
-| Hosting | Vercel (frontend), self-hosted or Render (optional API layer) |
+| Hosting | Railway (frontend + Connect API) |
 
 **7. Roadmap preview**
 
@@ -493,31 +493,23 @@ Revenue reporting by provider, treatment type, and period.
 
 ### Step 10: Connect API Deployment (Week 19, 2-3 hours)
 
-Deploy Connect to a service like Render or Fly.io (different from the portal's Vercel).
+Deploy Connect as a second Railway service.
 
-- [ ] Create a `Render.yaml` or `fly.toml`:
+- [ ] Railway auto-detects the Node/Express app via Nixpacks. Optionally create a `nixpacks.toml`:
 
-For Render:
+```toml
+# nixpacks.toml (optional — Railway auto-detects Node)
+[phases.build]
+cmds = ["npm run build"]
 
-```yaml
-# render.yaml
-services:
-  - type: web
-    name: connect-api
-    env: node
-    buildCommand: npm install && npm run build
-    startCommand: npm start
-    envVars:
-      - key: NODE_ENV
-        value: production
-      - key: STRIPE_SECRET_KEY
-        sync: false
+[start]
+cmd = "npm start"
 ```
 
-- [ ] Deploy: Link repo to Render, select `apps/connect-api`
-- [ ] Test: `curl https://connect-api-xxxx.onrender.com/health`
-- [ ] Document the URL: `NEXT_PUBLIC_CONNECT_API_URL=https://connect-api-xxxx.onrender.com`
-- [ ] Commit: `git commit -m "chore: deploy Connect API to Render"`
+- [ ] Deploy: Run `railway up` from `apps/connect-api` (or link the repo to a new Railway service)
+- [ ] Test: `curl https://connect-api-xxxx.up.railway.app/health`
+- [ ] Document the URL: `NEXT_PUBLIC_CONNECT_API_URL=https://connect-api-xxxx.up.railway.app`
+- [ ] Commit: `git commit -m "chore: deploy Connect API to Railway"`
 
 ### Step 11: Integrate Connect into the Portal (Week 20, 3-4 hours)
 
