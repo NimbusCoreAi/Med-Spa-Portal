@@ -66,22 +66,22 @@ export function IntakeFormRenderer({ formId, appointmentId }: IntakeFormRenderer
     }
   }
 
-  if (loading) return <p className="p-8 text-gray-500">Loading form...</p>;
-  if (error && !form) return <p className="p-8 text-red-600">{error}</p>;
+  if (loading) return <p className="p-8 text-gray-500 dark:text-slate-400">Loading form...</p>;
+  if (error && !form) return <p className="p-8 text-red-600 dark:text-red-400">{error}</p>;
   if (!form) return null;
 
   if (submitted) {
     return (
       <Card className="max-w-xl mx-auto mt-12">
-        <h1 className="text-xl font-bold mb-2">Thank you!</h1>
-        <p className="text-gray-600">Your intake form has been submitted.</p>
+        <h1 className="text-xl font-bold mb-2 text-slate-900 dark:text-slate-50">Thank you!</h1>
+        <p className="text-gray-600 dark:text-slate-400">Your intake form has been submitted.</p>
       </Card>
     );
   }
 
   return (
     <Card className="max-w-xl mx-auto mt-12 space-y-6">
-      <h1 className="text-xl font-bold">{form.name}</h1>
+      <h1 className="text-xl font-bold text-slate-900 dark:text-slate-50">{form.name}</h1>
 
       <div className="[&_button[type='submit']]:hidden">
         <PatientForm
@@ -114,7 +114,7 @@ export function IntakeFormRenderer({ formId, appointmentId }: IntakeFormRenderer
         disabled={submitting || !firstName || !lastName || !email}
       />
 
-      {error && <p className="text-sm text-red-600">{error}</p>}
+      {error && <p className="text-sm text-red-600 dark:text-red-400">{error}</p>}
     </Card>
   );
 }

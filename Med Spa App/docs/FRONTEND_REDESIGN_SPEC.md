@@ -619,6 +619,8 @@ Apply Phase B design system patterns to remaining pages systematically. This pha
 
 ### 3.1 Pages to Redesign (Priority Order)
 
+**ACTUAL OUTCOME so far (2026-06-18):** Before any Priority-1 work, found that the base `@baseplate/ui` components (`Button`, `Input`, `Form`, `Table`, `Modal`, `PageLayout`/`Card`) had zero `dark:` classes — every dashboard table, modal, and form field rendered through them was light-mode-only even though the dashboard shell supports dark mode. Fixed once at the component level (additive `dark:` classes only, no behavior change, all 46 existing `packages/ui` tests still pass unchanged) rather than patching it per-page — this benefits every Phase C page, not just auth. See Build Log for commit.
+
 #### Priority 1: Authentication Pages (High Visibility)
 - **Files:**
   - `apps/portal-medspa/src/app/auth/login/page.tsx`
@@ -637,6 +639,8 @@ Apply Phase B design system patterns to remaining pages systematically. This pha
   - `PasswordStrengthIndicator.tsx` — password validation UI
 - **Skill:** `add-feature` (auth redesign)
 
+**ACTUAL OUTCOME (2026-06-18): Done — restyled in place, not rebuilt.** `AuthLayout`, `LoginForm`, `SignupForm`, and `/signup/success` now use the slate dark-mode palette consistent with the dashboard. Did **not** add a magic-link option or `PasswordStrengthIndicator`/`AuthCard`/`AuthForm` wrapper components — those are new features/behavior, not a visual redesign of the existing forms, and weren't asked for. No forgot-password page exists in the app today (confirmed via repo search) — out of scope for a styling pass; flagging as a product gap, not a redesign task.
+
 #### Priority 2: Settings Pages (Stable, Less Traffic)
 - **Files:**
   - `apps/portal-medspa/src/app/dashboard/settings/page.tsx` (clinic settings)
@@ -653,6 +657,8 @@ Apply Phase B design system patterns to remaining pages systematically. This pha
   - `BillingTable.tsx` — invoices/subscriptions table
 - **Skill:** `modify-feature` (settings redesign)
 
+**ACTUAL OUTCOME (2026-06-18): Restyled what exists; did not build the assumed sub-pages.** Repo inventory found only `/dashboard/settings/billing` exists — there is no separate clinic-settings or profile-settings route today (the spec assumed a 3-page settings section that was never built). Restyled the billing page + `ManageSubscriptionButton` with dark mode/slate palette. Did not invent new clinic/profile settings pages or a `SettingsSidebar` — building net-new settings surfaces is a feature addition, not a redesign of this spec's scope, and wasn't requested.
+
 #### Priority 3: Forms & Intake Pages
 - **Files:**
   - `apps/portal-medspa/src/app/dashboard/forms/page.tsx` (form builder)
@@ -666,6 +672,8 @@ Apply Phase B design system patterns to remaining pages systematically. This pha
   - `FormPreview.tsx` — live preview
   - `IntakeFormDisplay.tsx` — patient-facing form
 - **Skill:** `modify-feature` (form redesign)
+
+**ACTUAL OUTCOME (2026-06-18): Done — restyled in place.** `/dashboard/forms` (+ its `loading.tsx` skeleton), `FormBuilder`, `/patient/intake/[formId]`, and `IntakeFormRenderer` all dark-mode-aware now. Also fixed `@baseplate/patterns/digital-signature`'s `SignatureCapture` (rendered inside the intake flow) which had the same light-only gap as the base ui components. Did not build a drag-and-drop `FormBuilder.tsx` visual editor or `FormPreview.tsx` — the existing builder already has a live preview pane (via the generic `Form` renderer) and drag-and-drop reordering is a new feature, not a styling change. `/patient/book/[clinicId]` (booking) is in the same patient-facing family but wasn't in this spec's enumerated Priority list — left out of this pass.
 
 #### Priority 4: Marketplace & Feedback Pages
 - **Files:**

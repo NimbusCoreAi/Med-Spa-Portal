@@ -32,7 +32,7 @@ export function Form({ fields, values, onChange, onSubmit, submitLabel = 'Submit
         if (field.type === 'textarea') {
           return (
             <div key={field.name} className="flex flex-col gap-1">
-              <label htmlFor={field.name} className="text-sm font-medium text-gray-700">
+              <label htmlFor={field.name} className="text-sm font-medium text-gray-700 dark:text-slate-300">
                 {field.label}
               </label>
               <textarea
@@ -42,7 +42,7 @@ export function Form({ fields, values, onChange, onSubmit, submitLabel = 'Submit
                 placeholder={field.placeholder}
                 value={(value as string) ?? ''}
                 onChange={(e) => onChange(field.name, e.target.value)}
-                className="rounded border border-gray-300 px-3 py-2 text-base focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="rounded border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-gray-900 dark:text-slate-50 px-3 py-2 text-base focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
           );
@@ -50,7 +50,7 @@ export function Form({ fields, values, onChange, onSubmit, submitLabel = 'Submit
 
         if (field.type === 'checkbox') {
           return (
-            <label key={field.name} className="flex items-center gap-2 text-sm font-medium text-gray-700">
+            <label key={field.name} className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-slate-300">
               <input
                 type="checkbox"
                 name={field.name}
@@ -66,7 +66,7 @@ export function Form({ fields, values, onChange, onSubmit, submitLabel = 'Submit
         if (field.type === 'select') {
           return (
             <div key={field.name} className="flex flex-col gap-1">
-              <label htmlFor={field.name} className="text-sm font-medium text-gray-700">
+              <label htmlFor={field.name} className="text-sm font-medium text-gray-700 dark:text-slate-300">
                 {field.label}
               </label>
               <select
@@ -75,7 +75,7 @@ export function Form({ fields, values, onChange, onSubmit, submitLabel = 'Submit
                 required={field.required}
                 value={(value as string) ?? ''}
                 onChange={(e) => onChange(field.name, e.target.value)}
-                className="rounded border border-gray-300 px-3 py-2 text-base focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="rounded border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-gray-900 dark:text-slate-50 px-3 py-2 text-base focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
                 <option value="" disabled>
                   Select...
@@ -105,7 +105,7 @@ export function Form({ fields, values, onChange, onSubmit, submitLabel = 'Submit
         );
       })}
 
-      {error && <div className="text-sm text-red-600">{error}</div>}
+      {error && <div className="text-sm text-red-600 dark:text-red-400">{error}</div>}
 
       <Button type="submit" disabled={loading} className="w-full">
         {loading ? 'Submitting...' : submitLabel}

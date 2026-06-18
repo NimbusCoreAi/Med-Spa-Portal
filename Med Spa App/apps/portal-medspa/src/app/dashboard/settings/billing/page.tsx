@@ -24,26 +24,26 @@ export default async function BillingSettingsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">Billing</h1>
-        <p className="mt-1 text-sm text-gray-600">Manage your subscription and billing details.</p>
+        <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-50">Billing</h1>
+        <p className="mt-1 text-sm text-gray-600 dark:text-slate-400">Manage your subscription and billing details.</p>
       </div>
 
       {error && (
-        <div className="rounded-md bg-red-50 p-4 text-sm text-red-700">{error}</div>
+        <div className="rounded-md bg-red-50 dark:bg-red-900/20 p-4 text-sm text-red-700 dark:text-red-300">{error}</div>
       )}
 
-      <div className="rounded-lg border border-gray-200 bg-white p-6">
-        <h2 className="text-lg font-medium text-gray-900">Current Plan</h2>
+      <div className="rounded-lg border border-gray-200 dark:border-slate-800 bg-white dark:bg-slate-950 p-6 shadow-sm">
+        <h2 className="text-lg font-medium text-slate-900 dark:text-slate-50">Current Plan</h2>
         {subscription ? (
           <div className="mt-4 space-y-2">
-            <p className="text-sm text-gray-600">
-              <span className="font-medium text-gray-900 capitalize">{subscription.plan}</span> plan
+            <p className="text-sm text-gray-600 dark:text-slate-400">
+              <span className="font-medium text-slate-900 dark:text-slate-50 capitalize">{subscription.plan}</span> plan
             </p>
-            <p className="text-sm text-gray-600">
-              Status: <span className="font-medium capitalize">{subscription.status}</span>
+            <p className="text-sm text-gray-600 dark:text-slate-400">
+              Status: <span className="font-medium capitalize text-slate-900 dark:text-slate-50">{subscription.status}</span>
             </p>
             {subscription.current_period_end && (
-              <p className="text-sm text-gray-600">
+              <p className="text-sm text-gray-600 dark:text-slate-400">
                 Next billing date: {new Date(subscription.current_period_end).toLocaleDateString()}
               </p>
             )}
@@ -51,7 +51,7 @@ export default async function BillingSettingsPage() {
           </div>
         ) : (
           <div className="mt-4 space-y-3">
-            <p className="text-sm text-gray-600">
+            <p className="text-sm text-gray-600 dark:text-slate-400">
               You&apos;re on the free pilot plan. Upgrade to unlock Connect API and priority support.
             </p>
             <a

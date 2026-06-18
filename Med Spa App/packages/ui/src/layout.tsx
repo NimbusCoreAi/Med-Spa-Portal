@@ -7,7 +7,7 @@ export interface PageLayoutProps {
 }
 
 export function PageLayout({ children, className }: PageLayoutProps) {
-  return <div className={clsx('min-h-screen bg-gray-50', className)}>{children}</div>;
+  return <div className={clsx('min-h-screen bg-gray-50 dark:bg-slate-900', className)}>{children}</div>;
 }
 
 export interface CardProps {
@@ -17,7 +17,12 @@ export interface CardProps {
 
 export function Card({ children, className }: CardProps) {
   return (
-    <div className={clsx('rounded-lg bg-white p-6 shadow-sm border border-gray-100', className)}>
+    <div
+      className={clsx(
+        'rounded-lg bg-white dark:bg-slate-950 p-6 shadow-sm border border-gray-100 dark:border-slate-800',
+        className
+      )}
+    >
       {children}
     </div>
   );

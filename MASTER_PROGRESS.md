@@ -45,6 +45,12 @@
 - [x] Verified: `pnpm typecheck` (17/17 packages), `packages/ui` Jest suite (46 tests, 97.95% coverage, unchanged), `next build` on portal-medspa (all routes compile)
 
 **Phase C — Remaining pages rollout: 🟡 In progress** (auth pages, settings, forms, marketplace, management pages — see spec for priority order and skill routing). Inventory taken 2026-06-18: only `/dashboard/settings/billing` exists today (no separate clinic/profile settings pages) and no forgot-password page exists — Phase C will restyle what exists rather than build net-new pages the spec assumed.
+- [x] Pre-Priority-1 fix: added missing `dark:` classes to the base `@baseplate/ui` components (`Button`, `Input`, `Form`, `Table`, `Modal`, `PageLayout`/`Card`) — they had zero dark-mode support despite the dashboard shell already supporting it. Additive only, all 46 existing tests pass unchanged.
+- [x] Priority 1 (auth): `AuthLayout`, `LoginForm`, `SignupForm`, `/signup/success` restyled with dark mode + slate palette. No forgot-password page exists in the app (confirmed via search) — flagged as a product gap, not built here.
+- [x] Priority 2 (settings): only `/dashboard/settings/billing` exists (no clinic/profile sub-pages were ever built) — restyled it + `ManageSubscriptionButton`. Did not invent new settings pages.
+- [x] Priority 3 (forms/intake): `/dashboard/forms` + `loading.tsx`, `FormBuilder`, `/patient/intake/[formId]`, `IntakeFormRenderer` restyled; also fixed `@baseplate/patterns/digital-signature` `SignatureCapture` (same light-only gap). `/patient/book` left out (not in spec's priority list).
+- [ ] Priority 4 (marketplace + feedback)
+- [ ] Priority 5 (providers, rooms, audit-logs)
 
 ---
 

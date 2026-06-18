@@ -80,11 +80,11 @@ export function Modal({ open, onClose, title, children }: ModalProps) {
         aria-labelledby={title ? titleId : undefined}
         aria-label={title ? undefined : 'Dialog'}
         tabIndex={-1}
-        className="w-full max-w-md rounded-lg bg-white p-6 shadow-lg outline-none"
+        className="w-full max-w-md rounded-lg bg-white dark:bg-slate-950 p-6 shadow-lg outline-none"
       >
         <div className="flex items-center justify-between mb-4">
           {title && (
-            <h2 id={titleId} className="text-lg font-semibold">
+            <h2 id={titleId} className="text-lg font-semibold text-slate-900 dark:text-slate-50">
               {title}
             </h2>
           )}
@@ -92,7 +92,7 @@ export function Modal({ open, onClose, title, children }: ModalProps) {
             type="button"
             onClick={onClose}
             aria-label="Close"
-            className="text-gray-400 hover:text-gray-600"
+            className="text-gray-400 dark:text-slate-500 hover:text-gray-600 dark:hover:text-slate-300"
           >
             &times;
           </button>

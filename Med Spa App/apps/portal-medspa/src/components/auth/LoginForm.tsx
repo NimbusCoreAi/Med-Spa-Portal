@@ -36,8 +36,11 @@ export function LoginForm() {
   }
 
   return (
-    <form onSubmit={handleLogin} className="space-y-4 bg-white p-8 rounded-lg shadow-sm">
-      <h1 className="text-2xl font-bold">Login</h1>
+    <form
+      onSubmit={handleLogin}
+      className="space-y-4 bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 p-8 rounded-lg shadow-sm"
+    >
+      <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-50">Login</h1>
 
       <Input
         type="email"
@@ -58,15 +61,15 @@ export function LoginForm() {
         required
       />
 
-      {error && <div className="text-sm text-red-600">{error}</div>}
+      {error && <div className="text-sm text-red-600 dark:text-red-400">{error}</div>}
 
       <Button type="submit" disabled={loading} className="w-full">
         {loading ? 'Logging in...' : 'Login'}
       </Button>
 
-      <p className="text-sm text-gray-600 text-center">
+      <p className="text-sm text-gray-600 dark:text-slate-400 text-center">
         Don&apos;t have an account?{' '}
-        <a href="/auth/signup" className="text-blue-600 hover:underline">
+        <a href="/auth/signup" className="text-blue-600 dark:text-blue-400 hover:underline">
           Sign up
         </a>
       </p>

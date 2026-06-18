@@ -43,8 +43,11 @@ export function SignupForm() {
   }
 
   return (
-    <form onSubmit={handleSignup} className="space-y-4 bg-white p-8 rounded-lg shadow-sm">
-      <h1 className="text-2xl font-bold">Create your clinic account</h1>
+    <form
+      onSubmit={handleSignup}
+      className="space-y-4 bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 p-8 rounded-lg shadow-sm"
+    >
+      <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-50">Create your clinic account</h1>
 
       <Input
         type="text"
@@ -83,15 +86,15 @@ export function SignupForm() {
         minLength={8}
       />
 
-      {error && <div className="text-sm text-red-600">{error}</div>}
+      {error && <div className="text-sm text-red-600 dark:text-red-400">{error}</div>}
 
       <Button type="submit" disabled={loading} className="w-full">
         {loading ? 'Creating account...' : 'Sign Up'}
       </Button>
 
-      <p className="text-sm text-gray-600 text-center">
+      <p className="text-sm text-gray-600 dark:text-slate-400 text-center">
         Already have an account?{' '}
-        <a href="/auth/login" className="text-blue-600 hover:underline">
+        <a href="/auth/login" className="text-blue-600 dark:text-blue-400 hover:underline">
           Login
         </a>
       </p>
