@@ -23,6 +23,12 @@ const config: Config = {
           pending: '#f59e0b',
           cancelled: '#ef4444',
         },
+        // Risk level colors
+        risk: {
+          high: '#ef4444',
+          medium: '#f59e0b',
+          low: '#3b82f6',
+        },
       },
       spacing: {
         'safe-top': 'max(1rem, env(safe-area-inset-top))',

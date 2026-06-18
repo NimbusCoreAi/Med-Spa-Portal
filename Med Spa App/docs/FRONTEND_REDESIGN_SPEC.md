@@ -6,7 +6,9 @@
 **Effort Level:** Full refresh (rebuild major sections)  
 **Approach:** Hybrid — Phase A (core pages), Phase B (design system), Phase C (remaining pages)
 
-> **STATUS (2026-06-17): Phase A complete** — Dashboard, Calendar, and Patient List all redesigned, dark-mode-enabled, typechecked, tested, and built clean. Implementation plan + per-task outcomes: `docs/superpowers/plans/2026-06-17-frontend-redesign-phase-a.md`. Progress tracked in root `MASTER_PROGRESS.md` under "Frontend Redesign (Med Spa Portal)". Note: Calendar and Patient List were restyled in place rather than rebuilt on `react-big-calendar`/`@tanstack/react-table` as Phase A's section below describes — see the plan file's Task 11/12 "ACTUAL OUTCOME" notes for the reasoning (preserve working functionality, avoid library-swap risk). **Phase B and Phase C are not started.**
+> **STATUS (2026-06-17): Phase A complete** — Dashboard, Calendar, and Patient List all redesigned, dark-mode-enabled, typechecked, tested, and built clean. Implementation plan + per-task outcomes: `docs/superpowers/plans/2026-06-17-frontend-redesign-phase-a.md`. Progress tracked in root `MASTER_PROGRESS.md` under "Frontend Redesign (Med Spa Portal)". Note: Calendar and Patient List were restyled in place rather than rebuilt on `react-big-calendar`/`@tanstack/react-table` as Phase A's section below describes — see the plan file's Task 11/12 "ACTUAL OUTCOME" notes for the reasoning (preserve working functionality, avoid library-swap risk).
+>
+> **STATUS (2026-06-18): Phase B complete (lean scope), Phase C in progress.** Phase B shipped the parts of section 2 with real payoff — `constants/{colors,spacing,typography}.ts`, `useMobile`/`useResponsive` hooks, and a fully rewritten `packages/ui/README.md` covering the component inventory, color/typography system, dark mode, responsive, and a11y conventions (see section 2.6 below for the deviation note). Phase C is being executed page-by-page in the priority order below; each page's actual outcome is logged inline as it lands.
 
 ---
 
@@ -601,6 +603,12 @@ Create stories for each component to enable:
 - Component prop exploration
 - Dark mode testing
 - Responsive testing
+
+**ACTUAL OUTCOME (2026-06-18): Skipped.** Explicitly marked optional in this spec. Adding Storybook means a new dev-dependency toolchain (storybook + addons) with no functional payoff for an internal component library that's already covered by Jest + RTL — would be pure scope growth, not requested. Revisit if/when the component library grows external consumers who need visual prop exploration without reading source.
+
+### 2.6 Directory Restructure — Deviation Note
+
+**ACTUAL OUTCOME (2026-06-18): Skipped the `core/`/`layout/`/`data-display/`/`forms/` folder reorg described in 2.1.** The existing flat files (`button.tsx`, `input.tsx`, `form.tsx`, `table.tsx`, `modal.tsx`, `layout.tsx`) are working, tested, and imported via stable subpaths (`@baseplate/ui/button`, etc.) from three apps. Moving them into nested folders is pure file-shuffling — same behavior, same exports — but touches every consumer's import path or `package.json#exports` map for no functional gain. `components/data-display/` already exists (added in Phase A for `KPICard`/`StatusBadge`/`RiskBadge`) and is the one piece of the target tree that earned its place by holding genuinely new components. What Phase B *did* ship from section 2: `hooks/useMobile.ts`, `hooks/useResponsive.ts`, `constants/{colors,spacing,typography}.ts`, and the README rewrite (2.4) — the additive, non-breaking parts of the plan. Mirrors the Phase A precedent (Calendar/Patient List restyled in place rather than rebuilt on new libraries) of preferring the lower-risk path when the spec's literal structure and the "preserve everything that works" constraint pull in different directions.
 
 ---
 

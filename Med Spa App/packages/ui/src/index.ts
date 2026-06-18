@@ -26,3 +26,11 @@ export type { RiskBadgeProps } from './components/data-display/RiskBadge';
 
 // Hooks
 export { useTheme } from './hooks/useTheme';
+export { useMobile } from './hooks/useMobile';
+export { useResponsive } from './hooks/useResponsive';
+
+// Constants
+export { serviceColors, statusColors, riskColors } from './constants/colors';
+export type { ServiceType, StatusType, RiskLevel } from './constants/colors';
+export { sectionGap, cardPadding, cardGap, breakpoints } from './constants/spacing';
+export { typography } from './constants/typography';

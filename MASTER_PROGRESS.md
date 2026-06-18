@@ -1,7 +1,7 @@
 # MASTER PROGRESS — Baseplate OS / Med Spa
 
 > **This is the single source of truth for project status.**
-> Last updated: 2026-06-17 | All phases code complete + security audited. Awaiting manual deployment. Frontend Redesign Phase A in progress (Dashboard/Calendar/Patients done).
+> Last updated: 2026-06-18 | All phases code complete + security audited. Awaiting manual deployment. Frontend Redesign Phase A + B done, Phase C in progress.
 
 ---
 
@@ -37,9 +37,14 @@
 - [x] Task 14: this progress update
 - [x] Final review (subagent code-quality + spec-compliance pass): caught a critical gap — `apps/portal-medspa/tailwind.config.js` never had `darkMode: 'class'` set, so every `dark:` class added this phase was inert (only responded to OS `prefers-color-scheme`, with no in-app toggle). Fixed in commit `5fa6fa7`: added `darkMode: 'class'`, wired a theme-toggle button into `DashboardHeader` using the previously-unused `useTheme` hook, and extended dark mode classes to the dashboard shell (layout/sidebar/header). Re-verified clean (`typecheck` + `build`) after the fix. No other critical/important issues found — review confirmed no fabricated data, no regressions to calendar/patient functionality, and adequate test coverage on new components.
 
-**Phase B — Design system consolidation: ⬜ Not started** (component library restructure, Tailwind docs, Storybook)
+**Phase B — Design system consolidation: ✅ Done (lean scope)**
+- [x] Added `packages/ui/src/constants/{colors,spacing,typography}.ts` (mirrors Tailwind theme values for JS/TS consumers) and `risk` color map to `packages/ui/tailwind.config.ts` (was missing despite `RiskBadge` already using red/yellow/blue)
+- [x] Added `useMobile()` / `useResponsive()` hooks to `packages/ui`, exported from `index.ts`
+- [x] Rewrote `packages/ui/README.md`: full component inventory, color system, typography scale, dark mode conventions, responsive guidance, accessibility notes, example-page pointers
+- [x] Skipped Storybook (optional in spec, no functional payoff for an internal lib already covered by Jest+RTL) and skipped the `core/`/`layout/`/`data-display/`/`forms/` folder reorg (pure churn on working, tested, multi-app-imported files) — see spec section 2.5/2.6 for the deviation rationale
+- [x] Verified: `pnpm typecheck` (17/17 packages), `packages/ui` Jest suite (46 tests, 97.95% coverage, unchanged), `next build` on portal-medspa (all routes compile)
 
-**Phase C — Remaining pages rollout: ⬜ Not started** (auth pages, settings, forms, marketplace, management pages — see spec for priority order and skill routing)
+**Phase C — Remaining pages rollout: 🟡 In progress** (auth pages, settings, forms, marketplace, management pages — see spec for priority order and skill routing). Inventory taken 2026-06-18: only `/dashboard/settings/billing` exists today (no separate clinic/profile settings pages) and no forgot-password page exists — Phase C will restyle what exists rather than build net-new pages the spec assumed.
 
 ---
 
@@ -316,6 +321,7 @@ postmark, stripe, twilio
 
 | Commit | Description |
 |--------|-------------|
+| `pending` | Frontend Redesign Phase B (lean scope): packages/ui constants + useMobile/useResponsive hooks + README design-system docs; Storybook + folder reorg deliberately skipped (see spec 2.5/2.6) |
 | `5fa6fa7` | Frontend Redesign Phase A final-review fix: enable functional dark mode (`darkMode: 'class'` + theme toggle in DashboardHeader) |
 | `6ea4a56` | Frontend Redesign Phase A (Task 12): modernize patient list styling + client-side search |
 | `73aa772` | Frontend Redesign Phase A (Task 11): modernize calendar page styling, dark mode |
