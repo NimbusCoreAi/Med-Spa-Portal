@@ -1,7 +1,7 @@
 # MASTER PROGRESS — Baseplate OS / Med Spa
 
 > **This is the single source of truth for project status.**
-> Last updated: June 2026 | All phases code complete + security audited. Awaiting manual deployment.
+> Last updated: 2026-06-17 | All phases code complete + security audited. Awaiting manual deployment. Frontend Redesign Phase A in progress (Dashboard/Calendar/Patients done).
 
 ---
 
@@ -19,6 +19,26 @@
 | Phase 3 | Intelligence & Ecosystem Build | ✅ Code complete | Rules engine (6 rules), Connect API intelligence endpoint, risk panel in portal, home services portal (13 routes), configurable RBAC factory, marketplace framework, MCP server (5 tools), ML scaffolding. 250 tests, 16 packages. Remaining: manual deploy |
 | Phase 4 | Open-Source Launch | ✅ Code complete + gap fixes applied | Repo prep (LICENSE, CONTRIBUTING, CHANGELOG, ARCHITECTURE, CI/CD), marketplace UI + dev docs, MCP server (11 tools, modularized), @baseplate/sdk (restructured), Python ML pipeline, churn-prediction endpoint, marketing materials. CI enhanced with Python validation + turbo cache. 17 packages, 250 tests. Remaining: GitHub launch (create public repo, push, marketing rollout) |
 | Phase 5 | Customer Onboarding | ✅ Code complete | Code gaps built: pricing/billing (subscription checkout, portal, webhook), observability (monitoring module, health endpoint, error boundaries), self-service signup, feedback widget + API. Security audited + fixed (IDOR holes patched, session auth enforced, email verification required). 262 tests, 17 packages, 35 portal routes. Remaining: ALL manual work (deploy, HIPAA, recruit pilots, onboard, ML training, revenue). |
+
+---
+
+## Frontend Redesign (Med Spa Portal) — In Progress
+
+> Full visual redesign of `apps/portal-medspa` inspired by `nexu-io/open-design` and `mengxi-ream/visactor-next-template` (shadcn/ui + Tailwind aesthetic, light/dark mode, card-based data-driven dashboard). Spec: [`Med Spa App/docs/FRONTEND_REDESIGN_SPEC.md`](Med%20Spa%20App/docs/FRONTEND_REDESIGN_SPEC.md). Plan: [`Med Spa App/docs/superpowers/plans/2026-06-17-frontend-redesign-phase-a.md`](Med%20Spa%20App/docs/superpowers/plans/2026-06-17-frontend-redesign-phase-a.md). Executed via subagent-driven-development, one commit per task.
+
+**Phase A — Core pages (Dashboard, Calendar, Patients): ✅ Done**
+- [x] Tasks 1-2: Tailwind config extension (service/status colors), `next-themes` light/dark mode provider + `useTheme` hook
+- [x] Tasks 3-6: `KPICard`, `StatusBadge`, `RiskBadge` data-display components added to `@baseplate/ui` (100% test coverage)
+- [x] Tasks 7-8: Recharts revenue/appointment trend charts + risk/patient-status donut charts
+- [x] Task 9: `/api/dashboard/metrics` route — built against the **real** schema (payments table for revenue, not the legacy `appointments.amount` field); risk distribution honestly returns zeros (no fabricated risk-score buckets) since risk scores aren't yet persisted in a bulk-queryable table
+- [x] Task 10: Dashboard Overview page rebuilt with KPI row + 4 charts + quick actions
+- [x] Tasks 11-12: Calendar and Patient List **restyled in place** (dark mode, modern card/slate palette) rather than rebuilt on new libraries (react-big-calendar / tanstack-table) — deliberate scope decision to preserve working functionality (room-conflict detection, payment panel, cancel flow) without the risk of a library swap; Patient List also gained client-side search (name/email/phone)
+- [x] Task 13: Full monorepo verification — `pnpm typecheck` (17/17 packages pass), `pnpm test` (all suites pass, packages/ui 97.95% coverage), `pnpm build` (portal-medspa builds clean, all dashboard routes compile; connect-api's unrelated pre-existing build failure is a missing-env-var issue in the marketplace route, not touched by this work)
+- [x] Task 14: this progress update
+
+**Phase B — Design system consolidation: ⬜ Not started** (component library restructure, Tailwind docs, Storybook)
+
+**Phase C — Remaining pages rollout: ⬜ Not started** (auth pages, settings, forms, marketplace, management pages — see spec for priority order and skill routing)
 
 ---
 
@@ -295,6 +315,14 @@ postmark, stripe, twilio
 
 | Commit | Description |
 |--------|-------------|
+| `6ea4a56` | Frontend Redesign Phase A (Task 12): modernize patient list styling + client-side search |
+| `73aa772` | Frontend Redesign Phase A (Task 11): modernize calendar page styling, dark mode |
+| `d43e600` | Frontend Redesign Phase A (Task 10): redesign dashboard page with KPI cards + charts |
+| `13ccdd2` | Frontend Redesign Phase A (Task 9): dashboard metrics API endpoint (real schema, no fabricated data) |
+| `9adcb8f` | Frontend Redesign Phase A (Tasks 7-8): revenue/appointment/risk/patient-status charts (Recharts) |
+| `38d0225` | Frontend Redesign Phase A (Tasks 3-6): KPICard, StatusBadge, RiskBadge components |
+| `64fa2f0` | Frontend Redesign Phase A (Task 2): theme provider + useTheme hook (light/dark mode) |
+| `7682358` | Frontend Redesign Phase A (Task 1): install deps, configure Tailwind for redesign |
 | `pending` | Module library inventory sync: `scripts/sync-module-inventory.mjs` generator (zero-dep) + `pnpm sync-modules` script. Regenerates Built Module Inventory (MASTER_PROGRESS.md) + Live Inventory table (MODULES_LIBRARY.md) from package.json exports + migration files. Fixed stale counts (core 17→18 modules, migrations 13→27). Added prose entries for monitoring, billing, sdk, clinics. |
 | `pending` | Phase 5 plan: execution plan + code gaps build guide written (PHASE_5_EXECUTION_PLAN.md, PHASE_5_CODE_GAPS.md) |
 | `pending` | Phase 4 launch: modularize MCP tools, restructure SDK, enhance CI (Python+cache), enrich package metadata, .gitignore Python patterns |
