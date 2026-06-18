@@ -61,7 +61,7 @@ export function RoomManager({ clinicId }: { clinicId: string }) {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-gray-900">Rooms</h1>
+        <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-50">Rooms</h1>
         <Button onClick={() => setShowForm(!showForm)}>
           {showForm ? 'Cancel' : 'Add Room'}
         </Button>
@@ -69,7 +69,7 @@ export function RoomManager({ clinicId }: { clinicId: string }) {
 
       {error && (
         <Card>
-          <p className="text-sm text-red-600">{error}</p>
+          <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
         </Card>
       )}
 
@@ -98,7 +98,7 @@ export function RoomManager({ clinicId }: { clinicId: string }) {
       )}
 
       {loading ? (
-        <p className="text-gray-500">Loading rooms...</p>
+        <p className="text-gray-500 dark:text-slate-400">Loading rooms...</p>
       ) : (
         <Card>
           <Table<Room>

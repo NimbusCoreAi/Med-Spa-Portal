@@ -121,17 +121,17 @@ export function FeedbackWidget() {
           onClick={() => setOpen(false)}
         >
           <div
-            className="flex max-h-[85vh] w-full max-w-md flex-col rounded-2xl bg-white shadow-xl"
+            className="flex max-h-[85vh] w-full max-w-md flex-col rounded-2xl bg-white dark:bg-slate-950 shadow-xl"
             onClick={(e) => e.stopPropagation()}
             role="dialog"
             aria-modal="true"
             aria-label="Feedback"
           >
-            <div className="flex items-center justify-between border-b px-5 py-4">
-              <h2 className="text-lg font-semibold text-gray-900">Feedback</h2>
+            <div className="flex items-center justify-between border-b border-gray-200 dark:border-slate-800 px-5 py-4">
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-slate-50">Feedback</h2>
               <button
                 onClick={() => setOpen(false)}
-                className="rounded-md p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600"
+                className="rounded-md p-1 text-gray-400 dark:text-slate-500 hover:bg-gray-100 dark:hover:bg-slate-800 hover:text-gray-600 dark:hover:text-slate-300"
                 aria-label="Close feedback"
               >
                 <CloseIcon />
@@ -141,20 +141,20 @@ export function FeedbackWidget() {
             <div className="flex-1 overflow-y-auto p-5">
               {submitted ? (
                 <div className="py-8 text-center">
-                  <p className="text-lg font-medium text-green-600">Thank you!</p>
-                  <p className="mt-1 text-sm text-gray-600">Your feedback has been submitted.</p>
+                  <p className="text-lg font-medium text-green-600 dark:text-green-400">Thank you!</p>
+                  <p className="mt-1 text-sm text-gray-600 dark:text-slate-400">Your feedback has been submitted.</p>
                 </div>
               ) : (
                 <form onSubmit={handleSubmit} className="space-y-4">
                   <div>
-                    <label htmlFor="fb-category" className="block text-sm font-medium text-gray-700">
+                    <label htmlFor="fb-category" className="block text-sm font-medium text-gray-700 dark:text-slate-300">
                       Category
                     </label>
                     <select
                       id="fb-category"
                       value={category}
                       onChange={(e) => setCategory(e.target.value)}
-                      className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                      className="mt-1 block w-full rounded-md border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-gray-900 dark:text-slate-50 px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
                     >
                       {CATEGORIES.map((c) => (
                         <option key={c.value} value={c.value}>{c.label}</option>
@@ -162,7 +162,7 @@ export function FeedbackWidget() {
                     </select>
                   </div>
                   <div>
-                    <label htmlFor="fb-message" className="block text-sm font-medium text-gray-700">
+                    <label htmlFor="fb-message" className="block text-sm font-medium text-gray-700 dark:text-slate-300">
                       Message
                     </label>
                     <textarea
@@ -172,11 +172,11 @@ export function FeedbackWidget() {
                       rows={4}
                       required
                       placeholder="Tell us what's on your mind..."
-                      className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                      className="mt-1 block w-full rounded-md border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-gray-900 dark:text-slate-50 px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
                     />
                   </div>
                   {error && (
-                    <p role="alert" className="text-sm text-red-600">{error}</p>
+                    <p role="alert" className="text-sm text-red-600 dark:text-red-400">{error}</p>
                   )}
                   <button
                     type="submit"
@@ -189,18 +189,26 @@ export function FeedbackWidget() {
               )}
 
               {pastFeedback.length > 0 && !submitted && (
-                <div className="mt-6 border-t pt-4">
-                  <h3 className="text-xs font-semibold uppercase tracking-wide text-gray-500">Recent Feedback</h3>
+                <div className="mt-6 border-t border-gray-200 dark:border-slate-800 pt-4">
+                  <h3 className="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-slate-400">
+                    Recent Feedback
+                  </h3>
                   <ul className="mt-2 space-y-2">
                     {pastFeedback.slice(0, 5).map((item) => (
-                      <li key={item.id} className="rounded-md bg-gray-50 px-3 py-2">
+                      <li key={item.id} className="rounded-md bg-gray-50 dark:bg-slate-900 px-3 py-2">
                         <div className="flex items-center justify-between">
-                          <span className="text-xs font-medium capitalize text-gray-700">{item.category}</span>
-                          <span className={`text-xs font-medium ${item.priority === 'high' || item.priority === 'critical' ? 'text-red-600' : 'text-gray-400'}`}>
+                          <span className="text-xs font-medium capitalize text-gray-700 dark:text-slate-300">{item.category}</span>
+                          <span
+                            className={`text-xs font-medium ${
+                              item.priority === 'high' || item.priority === 'critical'
+                                ? 'text-red-600 dark:text-red-400'
+                                : 'text-gray-400 dark:text-slate-500'
+                            }`}
+                          >
                             {item.priority}
                           </span>
                         </div>
-                        <p className="mt-1 text-xs text-gray-600 line-clamp-2">{item.message}</p>
+                        <p className="mt-1 text-xs text-gray-600 dark:text-slate-400 line-clamp-2">{item.message}</p>
                       </li>
                     ))}
                   </ul>

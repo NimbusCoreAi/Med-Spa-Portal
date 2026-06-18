@@ -8,7 +8,7 @@
 
 > **STATUS (2026-06-17): Phase A complete** — Dashboard, Calendar, and Patient List all redesigned, dark-mode-enabled, typechecked, tested, and built clean. Implementation plan + per-task outcomes: `docs/superpowers/plans/2026-06-17-frontend-redesign-phase-a.md`. Progress tracked in root `MASTER_PROGRESS.md` under "Frontend Redesign (Med Spa Portal)". Note: Calendar and Patient List were restyled in place rather than rebuilt on `react-big-calendar`/`@tanstack/react-table` as Phase A's section below describes — see the plan file's Task 11/12 "ACTUAL OUTCOME" notes for the reasoning (preserve working functionality, avoid library-swap risk).
 >
-> **STATUS (2026-06-18): Phase B complete (lean scope), Phase C in progress.** Phase B shipped the parts of section 2 with real payoff — `constants/{colors,spacing,typography}.ts`, `useMobile`/`useResponsive` hooks, and a fully rewritten `packages/ui/README.md` covering the component inventory, color/typography system, dark mode, responsive, and a11y conventions (see section 2.6 below for the deviation note). Phase C is being executed page-by-page in the priority order below; each page's actual outcome is logged inline as it lands.
+> **STATUS (2026-06-18): Phase B complete (lean scope), Phase C complete.** Phase B shipped the parts of section 2 with real payoff — `constants/{colors,spacing,typography}.ts`, `useMobile`/`useResponsive` hooks, and a fully rewritten `packages/ui/README.md` covering the component inventory, color/typography system, dark mode, responsive, and a11y conventions (see section 2.6 below for the deviation note). Phase C was executed page-by-page in the priority order below, plus a pre-work fix to the base `@baseplate/ui` components which had no dark-mode support at all; each page's actual outcome is logged inline. See "Phase C Summary" near the end of section 3 for the final verification snapshot.
 
 ---
 
@@ -688,6 +688,8 @@ Apply Phase B design system patterns to remaining pages systematically. This pha
   - `FeedbackChart.tsx` — sentiment visualization
 - **Skill:** `add-feature` or `modify-feature` (marketplace/feedback redesign)
 
+**ACTUAL OUTCOME (2026-06-18): Done — restyled in place.** `MarketplaceBrowser` and `/dashboard/feedback` got the slate/dark-mode treatment, plus `FeedbackWidget` (the floating feedback button + dialog rendered globally in the dashboard layout — same gap, same fix). Did not build `ModuleCard`/`MarketplaceGrid`/`FeedbackChart` as separate components — the existing single-file implementations already do card-grid layout and a sentiment-free list view; splitting them into new components or adding sentiment charting is a feature addition, not part of a dark-mode/styling pass.
+
 #### Priority 5: Management Pages (Lower Priority)
 - **Files:**
   - `apps/portal-medspa/src/app/dashboard/providers/page.tsx` (staff)
@@ -697,6 +699,12 @@ Apply Phase B design system patterns to remaining pages systematically. This pha
   - Reuse PatientTable pattern for staff/rooms/audit logs
   - Consistent table styling, filters, actions
 - **Skill:** `simplify` (apply existing patterns)
+
+**ACTUAL OUTCOME (2026-06-18): Done.** `ProviderManager`, `RoomManager`, `AuditLogViewer` all already composed `Card`/`Table`/`Button`/`Input` from `@baseplate/ui` — once those got dark-mode support (Priority 1's pre-work), only the page-local headings/labels/selects needed direct fixes. Confirms the spec's own prediction that these three would be the cheapest pages once the shared components and patterns existed.
+
+### Phase C Summary (2026-06-18)
+
+All 5 priorities done for what exists in the app today. **Verified:** `pnpm typecheck` (17/17 packages), `pnpm test` (all suites, 0 failures, coverage unchanged: `packages/ui` 97.95%, `packages/patterns` 92.7%), `next build` on `portal-medspa` (all 40 routes compile). Net new pages/features were deliberately not built where the spec assumed scaffolding that doesn't exist (forgot-password, clinic/profile settings, drag-and-drop form builder, marketplace sentiment charts) — those are product gaps to track separately, not redesign-scope gaps.
 
 ### 3.2 Execution Process for Each Page
 

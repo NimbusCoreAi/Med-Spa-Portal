@@ -1,7 +1,7 @@
 # MASTER PROGRESS — Baseplate OS / Med Spa
 
 > **This is the single source of truth for project status.**
-> Last updated: 2026-06-18 | All phases code complete + security audited. Awaiting manual deployment. Frontend Redesign Phase A + B done, Phase C in progress.
+> Last updated: 2026-06-18 | All phases code complete + security audited. Awaiting manual deployment. Frontend Redesign (Phases A, B, C) complete.
 
 ---
 
@@ -44,13 +44,16 @@
 - [x] Skipped Storybook (optional in spec, no functional payoff for an internal lib already covered by Jest+RTL) and skipped the `core/`/`layout/`/`data-display/`/`forms/` folder reorg (pure churn on working, tested, multi-app-imported files) — see spec section 2.5/2.6 for the deviation rationale
 - [x] Verified: `pnpm typecheck` (17/17 packages), `packages/ui` Jest suite (46 tests, 97.95% coverage, unchanged), `next build` on portal-medspa (all routes compile)
 
-**Phase C — Remaining pages rollout: 🟡 In progress** (auth pages, settings, forms, marketplace, management pages — see spec for priority order and skill routing). Inventory taken 2026-06-18: only `/dashboard/settings/billing` exists today (no separate clinic/profile settings pages) and no forgot-password page exists — Phase C will restyle what exists rather than build net-new pages the spec assumed.
+**Phase C — Remaining pages rollout: ✅ Done** (auth pages, settings, forms, marketplace, management pages). Inventory taken 2026-06-18: only `/dashboard/settings/billing` exists today (no separate clinic/profile settings pages) and no forgot-password page exists — Phase C restyled what exists rather than build net-new pages the spec assumed.
 - [x] Pre-Priority-1 fix: added missing `dark:` classes to the base `@baseplate/ui` components (`Button`, `Input`, `Form`, `Table`, `Modal`, `PageLayout`/`Card`) — they had zero dark-mode support despite the dashboard shell already supporting it. Additive only, all 46 existing tests pass unchanged.
 - [x] Priority 1 (auth): `AuthLayout`, `LoginForm`, `SignupForm`, `/signup/success` restyled with dark mode + slate palette. No forgot-password page exists in the app (confirmed via search) — flagged as a product gap, not built here.
 - [x] Priority 2 (settings): only `/dashboard/settings/billing` exists (no clinic/profile sub-pages were ever built) — restyled it + `ManageSubscriptionButton`. Did not invent new settings pages.
 - [x] Priority 3 (forms/intake): `/dashboard/forms` + `loading.tsx`, `FormBuilder`, `/patient/intake/[formId]`, `IntakeFormRenderer` restyled; also fixed `@baseplate/patterns/digital-signature` `SignatureCapture` (same light-only gap). `/patient/book` left out (not in spec's priority list).
-- [ ] Priority 4 (marketplace + feedback)
-- [ ] Priority 5 (providers, rooms, audit-logs)
+- [x] Priority 4 (marketplace + feedback): `MarketplaceBrowser`, `/dashboard/feedback`, and `FeedbackWidget` (global floating widget) restyled.
+- [x] Priority 5 (providers, rooms, audit-logs): `ProviderManager`, `RoomManager`, `AuditLogViewer` restyled — cheap fix since they already composed the now-dark-aware `Card`/`Table`/`Button`/`Input`.
+- [x] Final verification: `pnpm typecheck` (17/17), `pnpm test` (all suites, 0 failures, coverage unchanged), `next build` on portal-medspa (all 40 routes compile)
+
+**Frontend Redesign (Phases A+B+C): ✅ Done.** Net-new pages/features the spec assumed but don't exist in the app (forgot-password, clinic/profile settings, drag-and-drop form builder, marketplace sentiment charts, booking-page restyle) were deliberately not built — those are product/feature gaps to track separately from a visual-redesign pass.
 
 ---
 
@@ -327,7 +330,9 @@ postmark, stripe, twilio
 
 | Commit | Description |
 |--------|-------------|
-| `pending` | Frontend Redesign Phase B (lean scope): packages/ui constants + useMobile/useResponsive hooks + README design-system docs; Storybook + folder reorg deliberately skipped (see spec 2.5/2.6) |
+| `pending` | Frontend Redesign Phase C priorities 4-5: marketplace, feedback (+ global FeedbackWidget), providers/rooms/audit-logs restyled with dark mode. Phase C complete. |
+| `f4394be` | Frontend Redesign Phase C priorities 1-3: base @baseplate/ui dark-mode fix (Button/Input/Form/Table/Modal/Layout), auth pages, billing settings, forms/intake pages |
+| `eb2033e` | Frontend Redesign Phase B (lean scope): packages/ui constants + useMobile/useResponsive hooks + README design-system docs; Storybook + folder reorg deliberately skipped (see spec 2.5/2.6) |
 | `5fa6fa7` | Frontend Redesign Phase A final-review fix: enable functional dark mode (`darkMode: 'class'` + theme toggle in DashboardHeader) |
 | `6ea4a56` | Frontend Redesign Phase A (Task 12): modernize patient list styling + client-side search |
 | `73aa772` | Frontend Redesign Phase A (Task 11): modernize calendar page styling, dark mode |

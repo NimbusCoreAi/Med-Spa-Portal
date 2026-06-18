@@ -47,25 +47,25 @@ export function AuditLogViewer({ clinicId }: { clinicId: string }) {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">Audit Logs</h1>
-        <p className="text-sm text-gray-500">Compliance trail — owner access only.</p>
+        <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-50">Audit Logs</h1>
+        <p className="text-sm text-gray-500 dark:text-slate-400">Compliance trail — owner access only.</p>
       </div>
 
       {error && (
         <Card>
-          <p className="text-sm text-red-600">{error}</p>
+          <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
         </Card>
       )}
 
       <div className="flex items-center gap-3">
-        <label htmlFor="audit-action-filter" className="text-sm font-medium text-gray-700">
+        <label htmlFor="audit-action-filter" className="text-sm font-medium text-gray-700 dark:text-slate-300">
           Filter by action:
         </label>
         <select
           id="audit-action-filter"
           value={actionFilter}
           onChange={(e) => setActionFilter(e.target.value)}
-          className="rounded-md border border-gray-300 px-3 py-1.5 text-sm"
+          className="rounded-md border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-gray-900 dark:text-slate-50 px-3 py-1.5 text-sm"
         >
           <option value="">All actions</option>
           {uniqueActions.map((action) => (
@@ -77,7 +77,7 @@ export function AuditLogViewer({ clinicId }: { clinicId: string }) {
       </div>
 
       {loading ? (
-        <p className="text-gray-500">Loading audit logs...</p>
+        <p className="text-gray-500 dark:text-slate-400">Loading audit logs...</p>
       ) : (
         <Card>
           <Table<AuditLogRow>
