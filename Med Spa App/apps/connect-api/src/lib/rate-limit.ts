@@ -29,9 +29,15 @@ const smsDailyLimit = redis
   : null;
 
 function failClosed(limit: number) {
+  // RATE_LIMIT_FAIL_OPEN lets requests through when Upstash is unavailable.
+  // Intended for dev/staging only — production should provision Upstash and
+  // leave this unset so rate limiting fails closed (hard error, not a 200).
+  if (process.env.RATE_LIMIT_FAIL_OPEN === 'true') {
+    return { success: true, limit, remaining: limit };
+  }
   if (process.env.NODE_ENV === 'production') {
     throw new Error(
-      'Rate limiter not configured — set UPSTASH_REDIS_REST_URL and UPSTASH_REDIS_REST_TOKEN in production'
+      'Rate limiter not configured — set UPSTASH_REDIS_REST_URL and UPSTASH_REDIS_REST_TOKEN in production, or set RATE_LIMIT_FAIL_OPEN=true for dev/staging'
     );
   }
   return { success: true, limit, remaining: limit };
