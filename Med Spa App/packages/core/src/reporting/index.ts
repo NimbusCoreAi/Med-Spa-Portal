@@ -21,14 +21,23 @@ export interface GetDashboardMetricsParams {
 }
 
 /**
- * Compute dashboard metrics (revenue, appointment stats, no-show rate,
- * intake completion rate, revenue by provider, service popularity)
- * for a clinic over an optional date range.
+ * Compute dashboard metrics for a clinic over an optional date range.
+ *
+ * Revenue is sourced from the canonical `payments` ledger (amount_cents,
+ * status = 'completed'), divided by 100 to dollars — the same source the
+ * dashboard route and intelligence rules use. The legacy `appointments.amount`
+ * column is NOT used for revenue: migration 0024 changed it to integer cents
+ * without renaming it, so summing it as dollars inflated revenue 100x.
  */
 export async function getDashboardMetrics(params: GetDashboardMetricsParams, client?: SupabaseClient): Promise<DashboardMetrics> {
   const supabase = client ?? getAnonSupabaseClient();
 
-  let appointmentsQuery = supabase.from('appointments').select('*').eq('clinic_id', params.clinicId);
+  // Appointments feed the non-revenue metrics (counts, no-show, intake, service
+  // popularity, and the appointment_id -> provider_id map for revenue attribution).
+  let appointmentsQuery = supabase
+    .from('appointments')
+    .select('id, status, provider_id, service_type, intake_completed, scheduled_time')
+    .eq('clinic_id', params.clinicId);
   if (params.from) appointmentsQuery = appointmentsQuery.gte('scheduled_time', params.from);
   if (params.to) appointmentsQuery = appointmentsQuery.lte('scheduled_time', params.to);
 
@@ -41,6 +50,18 @@ export async function getDashboardMetrics(params: GetDashboardMetricsParams, cli
     .eq('clinic_id', params.clinicId);
   if (providersError) throw new Error(`Fetch providers failed: ${providersError.message}`);
 
+  // Canonical revenue ledger. Date range filters mirror the appointments window
+  // using payments.created_at (the dashboard route uses the same column).
+  let paymentsQuery = supabase
+    .from('payments')
+    .select('amount_cents, appointment_id, status, created_at')
+    .eq('clinic_id', params.clinicId);
+  if (params.from) paymentsQuery = paymentsQuery.gte('created_at', params.from);
+  if (params.to) paymentsQuery = paymentsQuery.lte('created_at', params.to);
+
+  const { data: payments, error: paymentsError } = await paymentsQuery;
+  if (paymentsError) throw new Error(`Fetch payments failed: ${paymentsError.message}`);
+
   const rows = appointments ?? [];
 
   const appointmentCounts = {
@@ -49,27 +70,37 @@ export async function getDashboardMetrics(params: GetDashboardMetricsParams, cli
     cancelled: rows.filter((a) => a.status === 'cancelled').length
   };
 
-  const totalRevenue = rows
-    .filter((a) => a.payment_status === 'completed')
-    .reduce((sum, a) => sum + Number(a.amount ?? 0), 0);
-
   const completedAppointments = rows.filter((a) => a.status === 'completed');
   const noShows = rows.filter((a) => a.status === 'cancelled' && !a.intake_completed).length;
   const noShowRate = completedAppointments.length > 0 ? noShows / completedAppointments.length : 0;
 
   const intakeCompletionRate = rows.length > 0 ? rows.filter((a) => a.intake_completed).length / rows.length : 0;
 
-  const revenueByProviderMap = new Map<string, number>();
+  // Revenue from payments, attributed to providers via the appointment map.
+  const providerByAppointment = new Map<string, string>();
   for (const a of rows) {
-    if (a.payment_status !== 'completed' || !a.provider_id) continue;
-    revenueByProviderMap.set(a.provider_id, (revenueByProviderMap.get(a.provider_id) ?? 0) + Number(a.amount ?? 0));
+    if (a.id && a.provider_id) providerByAppointment.set(a.id, a.provider_id as string);
+  }
+
+  const totalRevenueCents = (payments ?? [])
+    .filter((p) => p.status === 'completed')
+    .reduce((sum, p) => sum + Number(p.amount_cents ?? 0), 0);
+
+  const revenueByProviderCents = new Map<string, number>();
+  for (const p of payments ?? []) {
+    if (p.status !== 'completed') continue;
+    const appointmentId = p.appointment_id as string | null;
+    if (!appointmentId) continue;
+    const providerId = providerByAppointment.get(appointmentId);
+    if (!providerId) continue;
+    revenueByProviderCents.set(providerId, (revenueByProviderCents.get(providerId) ?? 0) + Number(p.amount_cents ?? 0));
   }
 
   const revenueByProvider = (providers ?? [])
     .map((p) => ({
       providerId: p.id as string,
       providerName: p.name as string,
-      revenue: revenueByProviderMap.get(p.id as string) ?? 0
+      revenue: (revenueByProviderCents.get(p.id as string) ?? 0) / 100
     }))
     .filter((p) => p.revenue > 0)
     .sort((a, b) => b.revenue - a.revenue);
@@ -85,7 +116,7 @@ export async function getDashboardMetrics(params: GetDashboardMetricsParams, cli
     .sort((a, b) => b.count - a.count);
 
   return {
-    totalRevenue,
+    totalRevenue: totalRevenueCents / 100,
     appointmentCounts,
     noShowRate,
     intakeCompletionRate,
