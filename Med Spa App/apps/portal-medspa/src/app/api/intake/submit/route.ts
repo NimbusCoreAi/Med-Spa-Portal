@@ -11,7 +11,10 @@ const bodySchema = z.object({
   lastName: z.string().min(1).max(100),
   email: z.string().email().optional(),
   responses: z.record(z.string(), z.unknown()),
-  signedConsent: z.boolean(),
+  // Consent is mandatory: an intake submission records a signed consent, so
+  // accepting false let callers create rows without consenting. Status is set
+  // to 'completed' only when this is true (see submitIntake).
+  signedConsent: z.literal(true),
 });
 
 export async function POST(req: NextRequest) {
@@ -34,8 +37,8 @@ export async function POST(req: NextRequest) {
 
   const { clinicId, formId, appointmentId, firstName, lastName, email, responses, signedConsent } = parsed.data;
 
-  // Verify the clinic exists before using service-role to write to it.
-  // Public endpoint — clinic_id comes from the client (QR code / link), must be validated.
+  // Public endpoint — writes under the service role (bypasses RLS), so every
+  // client-supplied reference MUST be verified against clinicId here.
   const client = getServiceSupabaseClient();
   const { data: clinic } = await client
     .from('clinics')
@@ -45,6 +48,32 @@ export async function POST(req: NextRequest) {
 
   if (!clinic) {
     return NextResponse.json({ error: 'Invalid clinic' }, { status: 400 });
+  }
+
+  // Ownership: the form template must belong to this clinic.
+  const { data: form } = await client
+    .from('intake_forms')
+    .select('id')
+    .eq('id', formId)
+    .eq('clinic_id', clinicId)
+    .maybeSingle();
+
+  if (!form) {
+    return NextResponse.json({ error: 'Invalid form for this clinic' }, { status: 400 });
+  }
+
+  // Ownership: if an appointment context is supplied, it must belong to this clinic.
+  if (appointmentId) {
+    const { data: appointment } = await client
+      .from('appointments')
+      .select('id')
+      .eq('id', appointmentId)
+      .eq('clinic_id', clinicId)
+      .maybeSingle();
+
+    if (!appointment) {
+      return NextResponse.json({ error: 'Invalid appointment for this clinic' }, { status: 400 });
+    }
   }
 
   try {

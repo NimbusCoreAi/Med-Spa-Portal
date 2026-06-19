@@ -38,11 +38,15 @@ export function createServerSupabaseClient() {
 export async function getUserContext(): Promise<UserContext | null> {
   const supabase = createServerSupabaseClient();
 
-  const { data: { session } } = await supabase.auth.getSession();
-  if (!session?.user) return null;
+  // getUser() revalidates the JWT against the auth server on every call,
+  // whereas getSession() only parses the cookie. Revoked/disabled users stay
+  // valid under getSession() until token expiry. This helper backs every
+  // protected API route, so the server-validated path is required here.
+  const { data: { user }, error } = await supabase.auth.getUser();
+  if (error || !user) return null;
 
-  const userId = session.user.id;
-  const email = session.user.email ?? '';
+  const userId = user.id;
+  const email = user.email ?? '';
 
   const { data: staff } = await supabase
     .from('staff')
