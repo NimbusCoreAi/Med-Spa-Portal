@@ -23,8 +23,19 @@ ml-models/data/
 # Environment (keep .example files tracked)
 .env
 .env*.local
+.env.*.local
+.env.development
+.env.production
+.env.test
+.env.preview
+.env.keys
 *.pem
 *.key
+
+# Personal / local notes & editor state (not for public repo)
+.obsidian/
+Second Brain/
+Substrate Ai Infrastructure/
 
 # OS files
 .DS_Store
@@ -43,3 +54,6 @@ nul
 
 # Logs
 *.log
+
+# Browser-test artifacts (Playwright MCP console logs + screenshots)
+.playwright-mcp/
