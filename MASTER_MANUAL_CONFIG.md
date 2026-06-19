@@ -3,8 +3,8 @@
 > **The living checklist for every manual setup, configuration, deployment, and human action across all phases.**
 > This is NOT a planning doc — it is the operational execution checklist. Update it as you go.
 > Pair with: `MASTER_PROGRESS.md` (project status) and `Med Spa App/CLAUDE.md` (dev commands).
-> Last updated: June 2026 — **ALL CODE COMPLETE + SECURITY AUDITED + 41 FINDINGS REMEDIATED (27 migrations, 270+ tests)**
-> **CONFIG IN PROGRESS:** Supabase, Stripe, Twilio, GitHub accounts created. `.env.local` wired up (5 creds still missing). Migrations + Supabase auth config next.
+> Last updated: June 2026 — **ALL CODE COMPLETE + SECURITY AUDITED + 41 FINDINGS REMEDIATED (28 migrations, 283 tests)**
+> **CONFIG IN PROGRESS:** Supabase, Stripe, Twilio, GitHub accounts created. `.env.local` wired up (5 creds still missing). Migrations 0028–0029 + Supabase auth config next.
 
 ---
 
@@ -31,7 +31,7 @@
 
 ## Current Project State
 
-> **ALL CODE IS COMPLETE across Phases 0-5.** 17 packages, 270+ tests, 13/13 builds pass. 27 SQL migrations (0001-0027).
+> **ALL CODE IS COMPLETE across Phases 0-5.** 17 packages, 161+ tests, 13/13 builds pass. 28 SQL migrations (0001-0029, with 0026 deleted as dead code).
 > What remains is **entirely manual**: account creation, deploys, configuration, customer recruitment.
 > No more code needs to be written (except ML training after pilot data exists).
 
@@ -40,13 +40,15 @@
 | # | Action | Where | Status |
 |---|--------|-------|--------|
 | 1 | ~~Get Supabase secret key~~ → paste into `.env.local` `SUPABASE_SERVICE_ROLE_KEY` | Supabase Dashboard → Settings → API Keys → `sb_secret_...` | [x] |
-| 2 | ~~Run all 27 migrations~~ on Supabase | `supabase db push` (DONE) | [x] |
-| 3 | **Disable email confirmation** in Supabase Auth (critical for signup to work) | Supabase Dashboard → Authentication → Settings | [ ] |
-| 4 | **Set Site URL + Redirect URLs** to `http://localhost:3000` | Supabase Dashboard → Authentication → URL Configuration | [ ] |
-| 5 | **Buy Twilio phone number** → paste into `.env.local` `TWILIO_PHONE_NUMBER` | Twilio Console → Phone Numbers → Buy | [ ] |
-| 6 | **Install Stripe CLI + run webhook listener** → paste `whsec_...` into `.env.local` | `stripe listen --forward-to localhost:3000/api/webhooks/stripe` | [ ] |
-| 7 | **Resolve Postmark/Email** — use Resend (free) or buy a domain | See Section 2.5 | [ ] |
-| 8 | **Run `pnpm dev`** in `Med Spa App/` and test signup flow | Local | [ ] |
+| 2 | ~~Run migrations 0001-0027~~ on Supabase via `supabase db push` | (DONE) | [x] |
+| 3 | **Apply migrations 0028 + 0029** (critical fixes — package deduction & email patient upsert are broken without them) | `supabase db push` (project `xahvcetvyypjduqfcqfq`) | [ ] |
+| 4 | **Disable email confirmation** in Supabase Auth (critical for signup to work) | Supabase Dashboard → Authentication → Settings | [ ] |
+| 5 | **Set Site URL + Redirect URLs** to `http://localhost:3000` | Supabase Dashboard → Authentication → URL Configuration | [ ] |
+| 6 | **Buy Twilio phone number** → paste into `.env.local` `TWILIO_PHONE_NUMBER` | Twilio Console → Phone Numbers → Buy | [ ] |
+| 7 | **Install Stripe CLI + run webhook listener** → paste `whsec_...` into `.env.local` (register 7 events incl. `charge.refunded`) | `stripe listen --forward-to localhost:3000/api/webhooks/stripe` | [ ] |
+| 8 | **Set `RATE_LIMIT_FAIL_OPEN=true`** in `.env.local` (until Upstash is provisioned) | `.env.local` | [ ] |
+| 9 | **Resolve Postmark/Email** — use Resend (free) or buy a domain | See Section 2.5 | [ ] |
+| 10 | **Run `pnpm dev`** in `Med Spa App/` and test signup flow | Local | [ ] |
 
 ---
 
@@ -110,6 +112,9 @@
 | Connect API key (shared) | `CONNECT_API_KEY` | Phase 2B | [ ] |
 | Upstash Redis REST URL | `UPSTASH_REDIS_REST_URL` | Phase 2C | [ ] |
 | Upstash Redis REST token | `UPSTASH_REDIS_REST_TOKEN` | Phase 2C | [ ] |
+| Rate-limit fail-open (dev/staging) | `RATE_LIMIT_FAIL_OPEN` | Phase 1 (dev) | [ ] set `=true` locally until Upstash provisioned |
+| Per-clinic SMS daily cap | `SMS_DAILY_LIMIT_PER_CLINIC` | Phase 2C | [ ] (defaults to 50) |
+| SMS intake_url host allowlist | `CONNECT_INTAKE_URL_ALLOWLIST` | Phase 2C | [ ] (recommended in prod) |
 | Encryption key (PHI) | _(stored in AWS KMS)_ | Phase 5B | [ ] |
 | **ML Serve URL** | `ML_SERVER_URL` | Phase 5F | [ ] |
 
@@ -131,7 +136,7 @@
 
 ## 2. Phase 1 (Remaining) — Staging Deploy & Smoke Test
 
-> **Prerequisite:** All Phase 1 code is complete. 262 tests pass, 17/17 packages typecheck, 35 routes build. Only manual steps remain.
+> **Prerequisite:** All Phase 1 code is complete. 283 tests pass, 17/17 packages typecheck, 35 routes build. Only manual steps remain.
 > **This is THE critical path — everything downstream depends on this completing first.**
 
 ### 2.1 Create External Service Accounts
@@ -174,9 +179,15 @@
 
 ### 2.3 Run Database Migrations
 
-> **✅ ALL 27 MIGRATIONS APPLIED** via `supabase db push` (linked to project `xahvcetvyypjduqfcqfq`).
-> 5 migration files were fixed for Supabase compatibility during deployment — see Section 10.11 for details.
-> If you need to re-run on a fresh project: `cd "Med Spa App" && supabase link --project-ref xahvcetvyypjduqfcqfq && supabase db push`
+> **Migrations 0001–0027 have been applied** via `supabase db push` (linked to project `xahvcetvyypjduqfcqfq`).
+> **⚠️ Migrations 0028 + 0029 are NEW and NOT YET APPLIED — they fix two silent, production-breaking bugs.** Run them before testing:
+> - **`0028_credit_package_updated_at.sql`** — `0023`'s `deduct_package_session` RPC writes `updated_at` on `credit_packages`, which has no such column. Without 0028, every package deduction throws at runtime.
+> - **`0029_patient_email_plain_unique.sql`** — `0020` created a unique index on the expression `(clinic_id, lower(email))`, but the upsert uses `onConflict: 'clinic_id,email'`, which Postgres can't infer from an expression index. Without 0029, every email-based patient booking throws `42P10`. 0029 replaces it with a plain `(clinic_id, email)` index (app lowercases email before insert).
+> - **`0026_dashboard_metrics_rpc.sql` was DELETED** (dead code — the RPC had zero callers; reporting now reads the `payments` ledger directly). If you already ran 0026 against your DB, the unused `get_dashboard_metrics()` function lingers harmlessly; no action needed.
+>
+> **To apply 0028 + 0029:** `cd "Med Spa App" && supabase link --project-ref xahvcetvyypjduqfcqfq && supabase db push`
+>
+> 5 migration files (0004, 0006, 0012, 0021, 0022) were fixed for Supabase compatibility during initial deployment — see Section 10.11 for details. **⚠️ Note: these 5 fixes were applied to the remote DB but are NOT committed to git. Commit them so a fresh `git clone` + `db push` reproduces your deployed schema.**
 
 **Phase 1 Migrations (core portal):**
 - [ ] `0001_init_clinics.sql` — Tables: `clinics`, `staff`, `patients`, `audit_logs` + indexes
@@ -214,10 +225,14 @@
 **Data Integrity + Performance Migrations:**
 - [ ] `0024_money_cents.sql` — Converts `appointments.amount` + `credit_packages.amount_paid` from NUMERIC(10,2) dollars to INTEGER cents (idempotent, guarded by column type check)
 - [ ] `0025_seed_is_synthetic.sql` — Adds `is_synthetic BOOLEAN` column to clinics, patients, providers, rooms, appointments, payments for seed data cleanup
-- [ ] `0026_dashboard_metrics_rpc.sql` — `get_dashboard_metrics(p_clinic_id)` SQL function for single-call dashboard aggregation
+- ~~`0026_dashboard_metrics_rpc.sql`~~ — **DELETED (dead code — RPC had zero callers). Skip.**
 - [ ] `0027_performance_indexes.sql` — Composite indexes on appointments, payments, patients, marketplace_subscriptions
 
-> **Total: 27 migrations.** Run all of them now — they're all additive (no destructive changes). Run in exact numeric order.
+**Post-Review Fix Migrations (REQUIRED — apply with `supabase db push`):**
+- [ ] `0028_credit_package_updated_at.sql` — Adds `updated_at` column to `credit_packages` so the `0023` deduction RPC stops throwing "column updated_at does not exist"
+- [ ] `0029_patient_email_plain_unique.sql` — Replaces the expression index from 0020 with a plain `(clinic_id, email)` unique index so `findOrCreatePatient`'s `onConflict: 'clinic_id,email'` works; normalizes stored emails to lowercase
+
+> **Total: 28 migrations** (0001–0025, 0027–0029; 0026 deleted). All are additive (no destructive changes). Run in exact numeric order.
 
 ### 2.4 Configure Supabase Dashboard
 
@@ -288,10 +303,11 @@
 **For production (after Railway deploy — see 2.10):**
 - [ ] Stripe Dashboard → Developers → Webhooks → Add endpoint
   - URL: `https://YOUR-DOMAIN.up.railway.app/api/webhooks/stripe`
-  - **Register ALL of these events:**
+  - **Register ALL of these events (7 total):**
     - `checkout.session.completed`
     - `payment_intent.succeeded`
     - `payment_intent.payment_failed`
+    - `charge.refunded` *(records refunds in the `payments` ledger so revenue reflects them)*
     - `customer.subscription.created` *(Phase 5 — subscription billing)*
     - `customer.subscription.updated` *(Phase 5 — subscription billing)*
     - `customer.subscription.deleted` *(Phase 5 — subscription billing)*
@@ -307,7 +323,7 @@
   - Set `PHI_ENABLED=false` (keep false until BAA signed)
   - Set `STRIPE_PRICE_CONNECT=` and `STRIPE_PRICE_INTELLIGENCE=` (leave empty for now — create Stripe products in Phase 2C)
 - [ ] Run `pnpm typecheck` — expect **17/17 packages pass**
-- [ ] Run `pnpm test` — expect **270+ tests, 0 failures**
+- [ ] Run `pnpm test` — expect **283 tests, 0 failures** (149 core + 25 intelligence + 46 UI + 23 patterns + 12 connect-api + 4 twilio + 24 others)
 - [ ] Run `pnpm build` — expect **13/13 builds pass**
 - [ ] Run `pnpm dev` — verify app loads at `http://localhost:3000`
 
@@ -356,7 +372,7 @@
 ### 2.10 Post-Deploy Configuration Updates
 
 - [ ] **Stripe webhook** → update endpoint to `https://YOUR-DOMAIN.up.railway.app/api/webhooks/stripe`
-  - Ensure ALL 6 events are registered (see Section 2.6)
+  - Ensure ALL 7 events are registered (see Section 2.6)
 - [ ] Copy new signing secret → update `STRIPE_WEBHOOK_SECRET` in Railway → redeploy
 - [ ] **Supabase Auth URLs** → set Site URL to `https://YOUR-DOMAIN.up.railway.app`
 - [ ] **Supabase Auth URLs** → add Redirect URL `https://YOUR-DOMAIN.up.railway.app/**`
@@ -410,7 +426,7 @@
 
 | Criteria | Status |
 |----------|--------|
-| All features built and tested (**262 tests**, 0 failures) | [x] |
+| All features built and tested (**283 tests**, 0 failures) | [x] |
 | Module library gaps closed (16+ modules in packages/) | [x] |
 | Architecture fixes applied (all 9 gaps resolved) | [x] |
 | HIPAA resolved (documented, free-tier non-PHI, BAA-ready) | [x] |
@@ -437,7 +453,7 @@
 
 **Final Quality Gate:**
 - [x] Run `pnpm typecheck` — **17/17 packages pass**
-- [x] Run all tests — **262 tests pass, 0 failures**
+- [x] Run all tests — **283 tests pass, 0 failures**
 - [x] Run `pnpm build` — **13/13 builds pass**
 
 ### 3B — Connect API Build & Deploy
@@ -651,7 +667,7 @@
 - [ ] Stripe Dashboard → exit Test Mode (toggle top right)
 - [ ] Copy **live secret key** (`sk_live_...`) → update `STRIPE_SECRET_KEY` in Railway
 - [ ] Stripe Dashboard → Developers → Webhooks → update endpoint URL to production domain
-  - **Ensure all 6 events are registered** (see Section 2.6 for full list including subscription events)
+  - **Ensure all 7 events are registered** (see Section 2.6 for full list including `charge.refunded` + subscription events)
 - [ ] Copy **live webhook signing secret** → update `STRIPE_WEBHOOK_SECRET` in Railway
 - [ ] Verify Stripe Products exist for subscription tiers (created in Phase 2C):
   - **Connect** ($49/mo) → Price ID = `STRIPE_PRICE_CONNECT`
@@ -951,12 +967,12 @@ Record these BEFORE the clinic starts using the portal for real patients:
 | 1 | Create account, switch to Test Mode | [x] |
 | 1 | Copy test secret key → `STRIPE_SECRET_KEY` | [x] |
 | 1 | Set up Stripe CLI for local webhook testing → `STRIPE_WEBHOOK_SECRET` | [ ] |
-| 1 | Register webhook endpoint with **6 events** (3 payment + 3 subscription) | [ ] |
+| 1 | Register webhook endpoint with **7 events** (3 payment + 1 refund + 3 subscription) | [ ] |
 | 2C | Create pricing products: Connect ($49/mo) → `STRIPE_PRICE_CONNECT` | [ ] |
 | 2C | Create pricing products: Intelligence ($99/mo) → `STRIPE_PRICE_INTELLIGENCE` | [ ] |
 | 5A | Switch to Live Mode | [ ] |
 | 5A | Copy live secret key → update Railway `STRIPE_SECRET_KEY` | [ ] |
-| 5A | Update webhook endpoint to production domain (all 6 events) | [ ] |
+| 5A | Update webhook endpoint to production domain (all 7 events) | [ ] |
 | 5A | Copy live webhook signing secret → update Railway | [ ] |
 | 5A | Test live $1 payment, verify webhook fires | [ ] |
 | 5G | Set up subscriptions for converted pilot clinics | [ ] |
@@ -980,7 +996,8 @@ Record these BEFORE the clinic starts using the portal for real patients:
 | 4A | Run migration **0013** (marketplace tables) | [x] |
 | **5** | Run migrations **0014, 0015** (subscriptions + feedback tables) | [x] |
 | **Sec** | Run migrations **0016-0023** (per-clinic API keys, payments table, webhook idempotency, RLS fixes, patient unique, room exclusion, ON DELETE, package expiry) | [x] |
-| **Sec** | Run migrations **0024-0027** (money→cents, is_synthetic seed column, dashboard RPC, performance indexes) | [x] |
+| **Sec** | Run migrations **0024-0027** (money→cents, is_synthetic seed column, ~~dashboard RPC~~, performance indexes) | [x] |
+| **Fix** | **Apply migrations 0028 + 0029** (critical fixes: package-deduction `updated_at` column; plain email unique index) | **[ ] ⚠️** |
 | 5A | Upgrade to **Pro tier** ($25/mo) | [ ] |
 | 5A | Set Site URL to production domain | [ ] |
 | 5A | Add production domain to Redirect URLs | [ ] |
@@ -1049,7 +1066,7 @@ Record these BEFORE the clinic starts using the portal for real patients:
 
 | Webhook | Service | URL | Events | Phase | Configured |
 |---------|---------|-----|--------|-------|------------|
-| Stripe (payment + subscription) | Stripe → Portal | `https://YOUR-DOMAIN/api/webhooks/stripe` | `checkout.session.completed`, `payment_intent.succeeded`, `payment_intent.payment_failed`, `customer.subscription.created`, `customer.subscription.updated`, `customer.subscription.deleted` | 1 (staging) / 5A (prod) | [ ] |
+| Stripe (payment + subscription) | Stripe → Portal | `https://YOUR-DOMAIN/api/webhooks/stripe` | `checkout.session.completed`, `payment_intent.succeeded`, `payment_intent.payment_failed`, `charge.refunded`, `customer.subscription.created`, `customer.subscription.updated`, `customer.subscription.deleted` | 1 (staging) / 5A (prod) | [ ] |
 
 ### 7.8 DNS / Domain Task Registry
 
@@ -1123,6 +1140,9 @@ Record these BEFORE the clinic starts using the portal for real patients:
 | `CONNECT_API_KEY` | Shared API key (legacy — per-clinic keys now used via `clinic_api_keys` table) | `(random hex string)` | External only |
 | `UPSTASH_REDIS_REST_URL` | Upstash Redis URL (rate limiting) | `https://xxx.upstash.io` | Phase 2C |
 | `UPSTASH_REDIS_REST_TOKEN` | Upstash Redis auth token | `AX...` | Phase 2C |
+| `RATE_LIMIT_FAIL_OPEN` | Dev/staging escape hatch — lets the Connect API respond when Upstash is unprovisioned (returns 200 instead of 500). **Leave unset in production** (rate limiting fails closed there). | `true` | Dev/staging until Upstash provisioned |
+| `SMS_DAILY_LIMIT_PER_CLINIC` | Per-clinic daily SMS volume cap (prevents SMS-pumping / toll fraud via one key). | `50` | No (defaults to 50) |
+| `CONNECT_INTAKE_URL_ALLOWLIST` | Comma-separated hosts permitted in SMS `intake_url` (anti-phishing). Unset = allow any URL (with a prod warning). | `intake.yourapp.com,yourapp.com` | Recommended in prod |
 
 ### Phase 5 — Subscription Billing (NEW)
 
@@ -1154,8 +1174,10 @@ Record these BEFORE the clinic starts using the portal for real patients:
 ## 9. Migration Tracker
 
 > Run via Supabase Dashboard → SQL Editor or `supabase db push` CLI.
-> **✅ ALL 27 MIGRATIONS APPLIED** via `supabase db push` (project ref: `xahvcetvyypjduqfcqfq`).
-> 5 migration files were fixed for PostgreSQL/Supabase compatibility during deployment (see Section 10.11).
+> **Migrations 0001–0027 have been applied** via `supabase db push` (project ref: `xahvcetvyypjduqfcqfq`).
+> **⚠️ Migrations 0028 + 0029 are NEW and NOT YET APPLIED** — they fix two silent, production-breaking bugs (see §2.3). Run `supabase db push` to apply.
+> **`0026_dashboard_metrics_rpc.sql` was DELETED** — it was dead code (the RPC had zero callers; reporting now reads the `payments` ledger directly).
+> 5 migration files were fixed for PostgreSQL/Supabase compatibility during deployment (see Section 10.11). **⚠️ These 5 fixes are applied to the remote DB but NOT committed to git — commit them so a fresh clone reproduces the deployed schema.**
 
 | # | File | What It Creates | Phase | Run |
 |---|------|-----------------|-------|-----|
@@ -1184,8 +1206,10 @@ Record these BEFORE the clinic starts using the portal for real patients:
 | 0023 | `0023_package_expiry_guard.sql` | Blocks deduction on expired packages (RPC) | Sec | [x] |
 | 0024 | `0024_money_cents.sql` | Converts amount columns from NUMERIC dollars to INTEGER cents (idempotent) | Data | [x] |
 | 0025 | `0025_seed_is_synthetic.sql` | `is_synthetic` column on 6 tables for seed cleanup | Data | [x] |
-| 0026 | `0026_dashboard_metrics_rpc.sql` | `get_dashboard_metrics()` SQL function | Data | [x] |
+| ~~0026~~ | ~~`0026_dashboard_metrics_rpc.sql`~~ | ~~`get_dashboard_metrics()` SQL function~~ | Data | **DELETED** (dead code — no callers) |
 | 0027 | `0027_performance_indexes.sql` | Composite indexes (appointments, payments, patients, marketplace) | Data | [x] |
+| **0028** | **`0028_credit_package_updated_at.sql`** | **Adds `updated_at` to `credit_packages` — fixes the `0023` deduction RPC which threw "column updated_at does not exist" on every call** | **Fix** | **[ ] ⚠️ APPLY** |
+| **0029** | **`0029_patient_email_plain_unique.sql`** | **Replaces 0020's expression index with a plain `(clinic_id, email)` unique index so the upsert's `onConflict` works; lowercases stored emails** | **Fix** | **[ ] ⚠️ APPLY** |
 
 ---
 
@@ -1196,7 +1220,7 @@ Record these BEFORE the clinic starts using the portal for real patients:
 ### 10.1 Test Count
 
 - **Conflict:** Phase 1 guide says 203 tests. Audit reports 236 tests. Security audit says 262 tests.
-- **Resolution:** **270+ tests** is current (post-security remediation — includes 9 new a11y tests for Button/Modal/Input). Verify with `pnpm test`.
+- **Resolution:** **283 tests** is current (verified via `pnpm -r test`: 149 core + 25 intelligence + 46 UI + 23 patterns + 12 connect-api + 4 twilio + 24 others).
 
 ### 10.2 Package Count
 
@@ -1215,8 +1239,9 @@ Record these BEFORE the clinic starts using the portal for real patients:
 
 ### 10.5 Stripe Webhook Events
 
-- **Resolution:** Register **6 events** total:
+- **Resolution:** Register **7 events** total:
   - Payment events: `checkout.session.completed`, `payment_intent.succeeded`, `payment_intent.payment_failed`
+  - Refund event: `charge.refunded` *(marks the matching `payments` ledger row as `refunded` so revenue reflects refunds)*
   - Subscription events (Phase 5): `customer.subscription.created`, `customer.subscription.updated`, `customer.subscription.deleted`
 
 ### 10.6 Connect API Deployment Target
@@ -1238,7 +1263,7 @@ Record these BEFORE the clinic starts using the portal for real patients:
 
 ### 10.9 Security Audit Fixes Applied
 
-- **Resolution:** A comprehensive security audit identified **41 findings** across 11 phases. All have been **fixed and verified** (35 commits, 17/17 typecheck, 270+ tests passing). Full details in `Med Spa App/CODE_REVIEW.md` and `Med Spa App/docs/superpowers/plans/2026-06-16-progress-summary.md`.
+- **Resolution:** A comprehensive security audit identified **41 findings** across 11 phases. All have been **fixed and verified** (35 commits, 17/17 typecheck, 283 tests passing). Full details in `Med Spa App/CODE_REVIEW.md` and `Med Spa App/docs/superpowers/plans/2026-06-16-progress-summary.md`.
 
 **Phase 1 — Tenant Isolation (CRITICAL):**
   - Per-clinic API keys with SHA-256 hash lookup (migration 0016); all 7 Connect API routes derive clinicId from the key
@@ -1253,6 +1278,7 @@ Record these BEFORE the clinic starts using the portal for real patients:
 **Phase 3 — Security Hardening:**
   - Rate limiter fail-closed in prod + hashed keys; signup rate-limited + generic errors + compensating rollback
   - Middleware switched from `getSession()` → `getUser()` (revalidates JWT)
+  - **⚠️ Correction (post-review):** the original remediation only switched `middleware.ts` to `getUser()`. The shared helper `getUserContext()` in `lib/supabase/server.ts` — which backs **all 13 protected API routes** — still used `getSession()` (parses the cookie JWT without a server round-trip, so revoked/disabled users stayed valid until token expiry). This was fixed in commit `adf49d7`: `getUserContext()` now calls `getUser()` too.
 
 **Phase 4-5 — Compliance + Auth:**
   - Swallowed audit catches → `logError`; request-id correlation; marketplace types standardized to snake_case
@@ -1272,7 +1298,10 @@ Record these BEFORE the clinic starts using the portal for real patients:
 
 - **Resolution:** Migration `0024` converts `appointments.amount` and `credit_packages.amount_paid` from `NUMERIC(10,2)` (dollars) to `INTEGER` (cents). **All money values in the database are now stored as integer cents** (e.g., `5000` = `$50.00`).
 - When writing manual SQL queries against these columns, remember to multiply/divide by 100.
-- The application code handles this automatically: `PaymentPanel` converts input to cents, `DashboardOverview` divides by 100 for display, `reporting/index.ts` sums raw cents.
+- The application code handles this automatically:
+  - `PaymentPanel` converts input to cents before sending.
+  - Both dashboard paths display cents/100: `DashboardOverview` (via `/api/dashboard/metrics`) and the reporting API (via `/api/reporting/metrics`).
+  - **⚠️ Important:** `reporting/index.ts` does **NOT** sum `appointments.amount` (that caused a 100× revenue inflation bug after 0024). It now sources revenue from the canonical **`payments.amount_cents`** ledger and divides by 100 — the same source `/api/dashboard/metrics` uses. Provider revenue attribution flows through the `appointment_id → provider_id` map.
 - The migration is **idempotent** — it guards with a column type check so re-running won't double-multiply.
 
 ### 10.11 Migration Fixes Applied During Initial Deploy
