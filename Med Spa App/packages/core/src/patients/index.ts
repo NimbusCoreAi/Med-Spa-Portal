@@ -13,16 +13,21 @@ export interface FindOrCreatePatientParams {
 export async function findOrCreatePatient(params: FindOrCreatePatientParams, client?: SupabaseClient): Promise<Patient> {
   const supabase = client ?? getAnonSupabaseClient();
 
-  // Atomic upsert on (clinic_id, lower(email)) unique index (created in 0020).
+  // Normalize email to lowercase. The unique index is on (clinic_id, email)
+  // (see 0029_patient_email_plain_unique.sql); storing lowercase preserves the
+  // case-insensitive uniqueness semantics the upsert relies on.
+  const email = params.email?.trim().toLowerCase() || undefined;
+
+  // Atomic upsert on the (clinic_id, email) unique index (created in 0029).
   // Eliminates the SELECT-then-INSERT race where two concurrent requests both
   // see no existing patient and both insert, creating duplicate rows.
-  if (params.email) {
+  if (email) {
     const { data, error } = await supabase
       .from('patients')
       .upsert(
         {
           clinic_id: params.clinicId,
-          email: params.email,
+          email,
           phone: params.phone,
           first_name: params.firstName,
           last_name: params.lastName,
@@ -44,7 +49,7 @@ export async function findOrCreatePatient(params: FindOrCreatePatientParams, cli
     .from('patients')
     .insert({
       clinic_id: params.clinicId,
-      email: params.email,
+      email,
       phone: params.phone,
       first_name: params.firstName,
       last_name: params.lastName,

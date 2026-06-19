@@ -87,6 +87,17 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ received: true });
   } catch (err) {
+    // Release the dedup claim so Stripe's retry can reprocess this event.
+    // The claim was inserted before processing to atomically reject concurrent
+    // deliveries; if we don't release it here, a transient failure permanently
+    // marks the event done and the payment/subscription side effects never apply.
+    const { error: releaseError } = await supabase
+      .from('processed_stripe_events')
+      .delete()
+      .eq('event_id', eventId);
+    if (releaseError) {
+      logError(new Error(releaseError.message), { eventId, op: 'event_release' });
+    }
     logError(err instanceof Error ? err : new Error(String(err)), { eventId, route: '/api/webhooks/stripe' });
     return NextResponse.json({ error: 'Webhook processing failed' }, { status: 400 });
   }
