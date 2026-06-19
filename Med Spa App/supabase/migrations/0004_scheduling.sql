@@ -36,7 +36,7 @@ CREATE TABLE appointments (
 
   CONSTRAINT no_provider_conflicts EXCLUDE USING GIST (
     provider_id WITH =,
-    tsrange(scheduled_time, scheduled_time + (duration_minutes || ' minutes')::INTERVAL) WITH &&
+    tsrange(scheduled_time, scheduled_time + (duration_minutes * INTERVAL '1 minute')) WITH &&
   ) WHERE (status <> 'cancelled')
 );
 

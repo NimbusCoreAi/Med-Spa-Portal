@@ -14,9 +14,18 @@ ALTER TABLE appointments
     FOREIGN KEY (room_id) REFERENCES rooms(id) ON DELETE SET NULL;
 
 -- intake_submissions: missing FK on appointment_id
-ALTER TABLE intake_submissions
-  ADD CONSTRAINT IF NOT EXISTS intake_submissions_appointment_id_fkey
-    FOREIGN KEY (appointment_id) REFERENCES appointments(id) ON DELETE SET NULL;
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM information_schema.table_constraints
+    WHERE table_name = 'intake_submissions'
+      AND constraint_name = 'intake_submissions_appointment_id_fkey'
+  ) THEN
+    ALTER TABLE intake_submissions
+      ADD CONSTRAINT intake_submissions_appointment_id_fkey
+        FOREIGN KEY (appointment_id) REFERENCES appointments(id) ON DELETE SET NULL;
+  END IF;
+END $$;
 
 -- package_transactions: SET NULL on appointment delete
 ALTER TABLE package_transactions

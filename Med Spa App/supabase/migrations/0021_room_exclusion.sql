@@ -8,6 +8,6 @@ ALTER TABLE appointments
     room_id WITH =,
     tsrange(
       scheduled_time,
-      scheduled_time + (duration_minutes || ' minutes')::INTERVAL
+      scheduled_time + (duration_minutes * INTERVAL '1 minute')
     ) WITH &&
   ) WHERE (room_id IS NOT NULL AND status <> 'cancelled');
