@@ -7,8 +7,16 @@ import type { Role } from '@baseplate/core';
 /**
  * Create a cookie-aware Supabase client for server-side code
  * (server components, API routes, middleware).
+ *
+ * When DEV_AUTH_BYPASS=true, returns the service-role client instead so all
+ * queries bypass RLS — there's no real auth session in dev-bypass mode, so
+ * the cookie-based anon client would be blocked by RLS policies.
  */
 export function createServerSupabaseClient() {
+  if (process.env.DEV_AUTH_BYPASS === 'true') {
+    return getServiceSupabaseClient();
+  }
+
   const { url, anonKey } = getSupabaseConfig();
   const cookieStore = cookies();
 
