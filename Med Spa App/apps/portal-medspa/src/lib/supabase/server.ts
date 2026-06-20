@@ -4,6 +4,7 @@ import type { Role } from '@baseplate/core';
 import { getMissingRequiredEnv } from '@/lib/env-check';
 
 const DEV_CLINIC_ID = '00000000-0000-0000-0000-0000000000a1';
+const DEV_STAFF_ID = '00000000-0000-0000-0000-0000000000f1';
 
 /**
  * DEV-ONLY auth bypass. Returns a hardcoded owner context without any DB
@@ -30,7 +31,7 @@ async function getDevUserContext(): Promise<UserContext> {
   }
 
   return {
-    userId: 'dev-bypass-user',
+    userId: DEV_STAFF_ID,
     clinicId: DEV_CLINIC_ID,
     role: 'owner' as Role,
     email: 'dev@bypass.local',

@@ -8,7 +8,7 @@ import { EnvSetupNotice } from '@/components/setup/EnvSetupNotice';
 import type { UserContext } from '@baseplate/core';
 
 const FALLBACK_CTX: UserContext = {
-  userId: 'dev-bypass-user',
+  userId: '00000000-0000-0000-0000-0000000000f1',
   clinicId: '00000000-0000-0000-0000-0000000000a1',
   role: 'owner',
   email: 'dev@bypass.local',

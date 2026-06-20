@@ -37,7 +37,6 @@ export async function GET(req: NextRequest) {
       .from('clinics')
       .select('id')
       .eq('id', parsed.data.clinicId)
-      .eq('status', 'active')
       .maybeSingle();
 
     if (!clinic) {
