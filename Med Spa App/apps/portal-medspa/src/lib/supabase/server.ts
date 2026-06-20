@@ -2,7 +2,7 @@ import { getServiceSupabaseClient } from '@baseplate/core/config';
 import type { UserContext } from '@baseplate/core';
 import type { Role } from '@baseplate/core';
 
-const DEV_CLINIC_ID = '00000000-0000-0000-0000-000000000001';
+const DEV_CLINIC_ID = '00000000-0000-0000-0000-0000000000a1';
 
 /**
  * DEV-ONLY auth bypass. Returns a hardcoded owner context without any DB

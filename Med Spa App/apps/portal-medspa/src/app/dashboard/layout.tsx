@@ -7,7 +7,7 @@ import type { UserContext } from '@baseplate/core';
 
 const FALLBACK_CTX: UserContext = {
   userId: 'dev-bypass-user',
-  clinicId: '00000000-0000-0000-0000-000000000001',
+  clinicId: '00000000-0000-0000-0000-0000000000a1',
   role: 'owner',
   email: 'dev@bypass.local',
 };
