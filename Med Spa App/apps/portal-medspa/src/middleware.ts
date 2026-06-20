@@ -5,6 +5,11 @@ import { getSupabaseConfig } from '@baseplate/core/config';
 const OWNER_ONLY_ROUTES = ['/dashboard/audit-logs', '/dashboard/settings'];
 
 export async function middleware(request: NextRequest) {
+  // DEV-ONLY: skip all auth checks so the app can be tested without logging in.
+  if (process.env.DEV_AUTH_BYPASS === 'true') {
+    return NextResponse.next({ request });
+  }
+
   const { url, anonKey } = getSupabaseConfig();
 
   let supabaseResponse = NextResponse.next({ request });
