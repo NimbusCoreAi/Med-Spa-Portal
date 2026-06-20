@@ -86,8 +86,8 @@ export async function GET() {
     const totalPatients = patientsCountResult.count ?? 0;
 
     // --- Summary ---
-    const revenueCents = payments.reduce((sum, p) => sum + (p.amount_cents ?? 0), 0);
-    const priorRevenueCents = priorPayments.reduce((sum, p) => sum + (p.amount_cents ?? 0), 0);
+    const revenueCents = payments.reduce((sum: number, p: { amount_cents?: number | null }) => sum + (p.amount_cents ?? 0), 0);
+    const priorRevenueCents = priorPayments.reduce((sum: number, p: { amount_cents?: number | null }) => sum + (p.amount_cents ?? 0), 0);
     const revenue = revenueCents / 100;
 
     const revenueTrend =
@@ -125,8 +125,8 @@ export async function GET() {
     // lifecycle status column on `patients`, so we only report buckets we can derive.
     const activePatientIds = new Set(
       (activePatientsResult.data ?? [])
-        .map((a) => a.patient_id as string | null)
-        .filter((id): id is string => Boolean(id))
+        .map((a: { patient_id?: string | null }) => a.patient_id as string | null)
+        .filter((id: string | null): id is string => Boolean(id))
     );
     const activeCount = activePatientIds.size;
     const inactiveCount = Math.max(totalPatients - activeCount, 0);
