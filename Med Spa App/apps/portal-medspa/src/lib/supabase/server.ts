@@ -7,46 +7,19 @@ import type { Role } from '@baseplate/core';
 /**
  * Create a cookie-aware Supabase client for server-side code
  * (server components, API routes, middleware).
- *
- * When DEV_AUTH_BYPASS=true, returns the service-role client instead so all
- * queries bypass RLS — there's no real auth session in dev-bypass mode, so
- * the cookie-based anon client would be blocked by RLS policies.
  */
 export function createServerSupabaseClient() {
-  if (process.env.DEV_AUTH_BYPASS === 'true') {
-    return getServiceSupabaseClient();
-  }
-
-  const { url, anonKey } = getSupabaseConfig();
-  const cookieStore = cookies();
-
-  return createServerClient(url, anonKey, {
-    cookies: {
-      getAll() {
-        return cookieStore.getAll();
-      },
-      setAll(cookiesToSet) {
-        try {
-          cookiesToSet.forEach(({ name, value, options }) =>
-            cookieStore.set(name, value, options)
-          );
-        } catch {
-          // The `setAll` method was called from a Server Component.
-          // This can be ignored if you have middleware refreshing sessions.
-        }
-      },
-    },
-  });
+  // ⚠️ TEMP: bypass RLS for testing. To restore, delete the line below and
+  // uncomment the code at the bottom of this file (RESTORE_COOKIE_CLIENT).
+  return getServiceSupabaseClient();
 }
 
 // Fixed UUID for the dev-bypass clinic so all requests share the same data.
 const DEV_CLINIC_ID = '00000000-0000-0000-0000-000000000001';
 
 /**
- * DEV-ONLY auth bypass. When DEV_AUTH_BYPASS=true is set in the environment,
- * this seeds a dev clinic (if none exists) and returns an owner context
- * without requiring a real Supabase Auth session. Lets you test the full app
- * without signing up / logging in. NEVER enable in production.
+ * DEV-ONLY auth bypass. Seeds a dev clinic (if none exists) and returns an
+ * owner context without requiring a real Supabase Auth session.
  */
 async function getDevUserContext(): Promise<UserContext> {
   const supabase = getServiceSupabaseClient();
@@ -78,34 +51,47 @@ async function getDevUserContext(): Promise<UserContext> {
  * Returns null if not authenticated.
  */
 export async function getUserContext(): Promise<UserContext | null> {
-  if (process.env.DEV_AUTH_BYPASS === 'true') {
-    return getDevUserContext();
-  }
-
-  const supabase = createServerSupabaseClient();
-
-  // getUser() revalidates the JWT against the auth server on every call,
-  // whereas getSession() only parses the cookie. Revoked/disabled users stay
-  // valid under getSession() until token expiry. This helper backs every
-  // protected API route, so the server-validated path is required here.
-  const { data: { user }, error } = await supabase.auth.getUser();
-  if (error || !user) return null;
-
-  const userId = user.id;
-  const email = user.email ?? '';
-
-  const { data: staff } = await supabase
-    .from('staff')
-    .select('clinic_id, role')
-    .eq('id', userId)
-    .maybeSingle();
-
-  if (!staff) return null;
-
-  return {
-    userId,
-    clinicId: staff.clinic_id,
-    role: staff.role as Role,
-    email,
-  };
+  // ⚠️ TEMP: auth bypassed for testing. To restore, delete the line below and
+  // uncomment the code at the bottom of this file (RESTORE_REAL_AUTH).
+  return getDevUserContext();
 }
+
+// ─────────────────────────────────────────────────────────────────────────────
+// RESTORE_COOKIE_CLIENT — uncomment this block and delete the early return in
+// createServerSupabaseClient() above to restore the cookie-based client.
+// ─────────────────────────────────────────────────────────────────────────────
+// function _createRealCookieClient() {
+//   const { url, anonKey } = getSupabaseConfig();
+//   const cookieStore = cookies();
+//   return createServerClient(url, anonKey, {
+//     cookies: {
+//       getAll() { return cookieStore.getAll(); },
+//       setAll(cookiesToSet) {
+//         try {
+//           cookiesToSet.forEach(({ name, value, options }) =>
+//             cookieStore.set(name, value, options)
+//           );
+//         } catch { /* Server Component — safe to ignore */ }
+//       },
+//     },
+//   });
+// }
+
+// ─────────────────────────────────────────────────────────────────────────────
+// RESTORE_REAL_AUTH — uncomment this block and delete the early return in
+// getUserContext() above to restore real authentication.
+// ─────────────────────────────────────────────────────────────────────────────
+// async function _realGetUserContext(): Promise<UserContext | null> {
+//   const supabase = createServerSupabaseClient();
+//   const { data: { user }, error } = await supabase.auth.getUser();
+//   if (error || !user) return null;
+//   const userId = user.id;
+//   const email = user.email ?? '';
+//   const { data: staff } = await supabase
+//     .from('staff')
+//     .select('clinic_id, role')
+//     .eq('id', userId)
+//     .maybeSingle();
+//   if (!staff) return null;
+//   return { userId, clinicId: staff.clinic_id, role: staff.role as Role, email };
+// }

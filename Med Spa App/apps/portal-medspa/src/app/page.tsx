@@ -3,9 +3,8 @@ import { redirect } from 'next/navigation';
 import { Button } from '@baseplate/ui/button';
 
 export default function HomePage() {
-  if (process.env.DEV_AUTH_BYPASS === 'true') {
-    redirect('/dashboard');
-  }
+  // ⚠️ TEMP: auth bypassed for testing. Remove this redirect to restore login.
+  redirect('/dashboard');
 
   return (
     <main className="min-h-screen flex flex-col items-center justify-center gap-6 text-center px-4">
