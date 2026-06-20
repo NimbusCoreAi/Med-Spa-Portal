@@ -3,6 +3,8 @@ import { DashboardSidebar } from '@/components/layout/DashboardSidebar';
 import { DashboardHeader } from '@/components/layout/DashboardHeader';
 import { FeedbackWidget } from '@/components/feedback/FeedbackWidget';
 import { getUserContext } from '@/lib/supabase/server';
+import { getMissingRequiredEnv } from '@/lib/env-check';
+import { EnvSetupNotice } from '@/components/setup/EnvSetupNotice';
 import type { UserContext } from '@baseplate/core';
 
 const FALLBACK_CTX: UserContext = {
@@ -13,6 +15,11 @@ const FALLBACK_CTX: UserContext = {
 };
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
+  const missingEnv = getMissingRequiredEnv();
+  if (missingEnv.length > 0) {
+    return <EnvSetupNotice missing={missingEnv} />;
+  }
+
   let ctx: UserContext | null;
   try {
     ctx = await getUserContext();

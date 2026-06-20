@@ -1,6 +1,7 @@
 import { getServiceSupabaseClient } from '@baseplate/core/config';
 import type { UserContext } from '@baseplate/core';
 import type { Role } from '@baseplate/core';
+import { getMissingRequiredEnv } from '@/lib/env-check';
 
 const DEV_CLINIC_ID = '00000000-0000-0000-0000-0000000000a1';
 
@@ -39,14 +40,35 @@ async function getDevUserContext(): Promise<UserContext> {
 /**
  * Create a Supabase client for server-side code.
  * TEMP: uses service-role client to bypass RLS in dev-bypass mode.
+ *
+ * Throws a clear SetupError listing the missing env vars instead of an
+ * opaque crash, so the API route catch-block can surface a helpful message.
  */
+export class SetupError extends Error {
+  missing: string[];
+  constructor(missing: string[]) {
+    super(
+      `Supabase environment variables are not configured. Missing: ${missing.join(', ')}. ` +
+        `Add them in Railway → Variables (or .env.local locally). See .env.example for values.`
+    );
+    this.name = 'SetupError';
+    this.missing = missing;
+  }
+}
+
 export function createServerSupabaseClient() {
-  // ⚠️ TEMP: bypass RLS for testing. To restore, delete the line below and
-  // use the cookie-based client (see RESTORE_COOKIE_CLIENT at bottom).
+  const missing = getMissingRequiredEnv();
+  if (missing.length > 0) {
+    throw new SetupError(missing);
+  }
+
   try {
     return getServiceSupabaseClient();
   } catch {
-    // If service key is missing, fall back to anon client (RLS will apply)
+    const anonMissing = getMissingRequiredEnv();
+    if (anonMissing.length > 0) {
+      throw new SetupError(anonMissing);
+    }
     return _createAnonClient();
   }
 }
